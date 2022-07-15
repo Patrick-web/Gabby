@@ -13,8 +13,11 @@
     "@react-native-voice/voice": "^3.2.4",
     "react": "18.0.0",
     "react-native": "0.69.0",
+    "react-native-contacts": "^7.0.4",
     "react-native-linear-gradient": "^2.5.6",
+    "react-native-phone-call": "^1.2.0",
     "react-native-svg": "^12.3.0",
+    "react-native-tts": "^4.1.0",
     "react-native-video": "^6.0.0-alpha.0"
   },
   "devDependencies": {

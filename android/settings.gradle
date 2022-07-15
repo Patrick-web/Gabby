@@ -6,6 +6,9 @@ includeBuild('../node_modules/react-native-gradle-plugin')
 include ':@react-native-voice_voice', ':app'
 project(':@react-native-voice_voice').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-voice/voice/android')
 
+include ':@react-native-tts', ':app'
+project(':@react-native-tts').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-tts/android')
+
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
 

@@ -1,74 +1,51 @@
-import React, { useState, useEffect } from "react";
-import Voice from "@react-native-voice/voice";
+import React, { useState, useEffect, useContext } from "react";
+import Tts from "react-native-tts";
+import Voice, { SpeechResultsEvent } from "@react-native-voice/voice";
 import { Image, Pressable, Text } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { decisionMaker, setCoreFx, removeHandler } from "../engine/engine";
+import { GlobalContext } from "../context/globalContext";
 
 const SpeakButton = ({
   isListening,
   toggleListenMode,
   activeTab,
   _setPartialSpeechResults,
-  addChat,
 }: {
   isListening: boolean;
   activeTab: "tutorial" | "commands" | "home";
   toggleListenMode: Function;
-  addChat: Function;
   _setPartialSpeechResults: Function;
 }) => {
-  const [started, setStarted] = useState("");
-  const [end, setEnd] = useState("");
-  const [error, setError] = useState("");
-  const [results, setResults] = useState([]);
-  const [partialResults, setPartialResults] = useState([]);
-  const [pitch, setPitch] = useState("");
-  const [recognized, setRecognized] = useState("");
+  const { addChat } = useContext(GlobalContext);
+  const [activeResolver, setActiveResolver] = useState<string | null>(null);
 
-  const onSpeechStart = (e: any) => {
-    console.log("onSpeechStart: ", e);
-    setStarted("√");
-  };
-
-  const onSpeechRecognized = (e: any) => {
-    console.log("onSpeechRecognized: ", e);
-    setRecognized("√");
-  };
-
-  const onSpeechEnd = (e: any) => {
+  const onSpeechEnd = () => {
     _setPartialSpeechResults("");
     toggleListenMode(false);
   };
 
-  const onSpeechError = (e: any) => {
-    console.log("onSpeechError: ", e);
+  const onSpeechError = () => {
+    // console.log("onSpeechError: ", e);
     toggleListenMode(false);
-    setError(JSON.stringify(e.error));
+    removeHandler();
   };
 
-  const onSpeechResults = (e: any) => {
-    addChat({ from: "user", text: e.value[0] });
+  const onSpeechResults = (e: SpeechResultsEvent) => {
+    if (!e.value) {
+      return;
+    }
+    const spokenText = e.value[0];
+    addChat({ from: "user", text: spokenText });
     _setPartialSpeechResults("");
+    decisionMaker(spokenText);
   };
 
   const onSpeechPartialResults = (e: any) => {
-    console.log("onSpeechPartialResults: ", e);
     _setPartialSpeechResults(e.value[0]);
   };
 
-  const onSpeechVolumeChanged = (e: any) => {
-    // console.log("onSpeechVolumeChanged: ", e);
-    setPitch(e.value);
-  };
-
   const startVoiceRecognition = async () => {
-    setRecognized("");
-    setPitch("");
-    setError("");
-    setStarted("");
-    setResults([]);
-    setPartialResults([]);
-    setEnd("");
-
     try {
       await Voice.start("en-US");
     } catch (e) {
@@ -84,30 +61,12 @@ const SpeakButton = ({
     }
   };
 
-  const _cancelRecognizing = async () => {
-    try {
-      await Voice.cancel();
-    } catch (e) {
-      console.error(e);
+  function toggleRecognition(turnOn: boolean) {
+    if (turnOn) {
+      startVoiceRecognition();
+      toggleListenMode(true);
+      return;
     }
-  };
-
-  const _destroyRecognizer = async () => {
-    try {
-      await Voice.destroy();
-    } catch (e) {
-      console.error(e);
-    }
-    setRecognized("");
-    setPitch("");
-    setError("");
-    setStarted("");
-    setResults([]);
-    setPartialResults([]);
-    setEnd("");
-  };
-
-  function toggleRecognition() {
     if (isListening == true) {
       stopVoiceRecognizing();
       toggleListenMode(false);
@@ -115,20 +74,20 @@ const SpeakButton = ({
       if (activeTab === "home") {
         startVoiceRecognition();
         toggleListenMode(true);
+      } else {
+        toggleListenMode(false);
       }
     }
   }
 
   useEffect(() => {
-    Voice.onSpeechStart = onSpeechStart;
-    Voice.onSpeechRecognized = onSpeechRecognized;
     Voice.onSpeechEnd = onSpeechEnd;
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechResults = onSpeechResults;
     Voice.onSpeechPartialResults = onSpeechPartialResults;
-    Voice.onSpeechVolumeChanged = onSpeechVolumeChanged;
 
-    console.log("Voices loaded");
+    setCoreFx(addChat, toggleRecognition);
+
     return () => {
       Voice.destroy().then(Voice.removeAllListeners);
     };
@@ -144,6 +103,7 @@ const SpeakButton = ({
         borderRadius: 50,
         position: "absolute",
         bottom: 20,
+        zIndex: 20,
         alignSelf: "center",
         alignItems: "center",
         justifyContent: "center",

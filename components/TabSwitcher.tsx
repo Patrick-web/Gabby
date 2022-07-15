@@ -7,13 +7,15 @@ import {
   LayoutAnimation,
 } from "react-native";
 
+import { TabsType } from "../types";
+
 const TabSwitcher = ({
   inListenMode,
   activeTab,
   switchTab,
 }: {
   inListenMode: boolean;
-  activeTab: "home" | "tutorial" | "commands";
+  activeTab: TabsType;
   switchTab: Function;
 }) => {
   function setTab(tab: "tutorial" | "commands") {

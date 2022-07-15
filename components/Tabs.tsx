@@ -4,22 +4,18 @@ import Svg, { Path } from "react-native-svg";
 import PromptTutorialCard from "./PromptTutorialCard";
 import ChatBubble from "./ChatBubble";
 
-interface PromptTutorial {
-  title: string;
-  promptBase: string;
-  promptInput: string;
-  promptExample: string;
-}
+import { PromptTutorialType } from "../types";
 
 const Tabs = ({ activeTab }: { activeTab: "tutorial" | "commands" }) => {
-  const sp: PromptTutorial = {
+  const sp: PromptTutorialType = {
     title: "Call Someone",
     promptBase: "Call",
     promptInput: "insert their name",
     promptExample: "Call Jenny",
   };
   return (
-    <View style={{ width: "100%", overflow: "hidden" }}>
+    <View
+      style={{ width: "100%", overflow: "hidden", }}>
       <ScrollView
         style={{
           height: activeTab == "commands" ? "0%" : "100%",

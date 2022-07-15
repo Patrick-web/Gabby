@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 
+import { TimeOfDayType } from "../types";
+
 const Greeting = ({ isListening: isListening }: { isListening: boolean }) => {
-  const [timeOfDay, setTimeOfDay] = useState<
-    "Morning" | "Night" | "Evening" | "Afternoon" | "Unknown"
-  >("Unknown");
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDayType>("Unknown");
   useEffect(() => {
     const hourOfTheDay = new Date().getHours();
     if (hourOfTheDay > 4 && hourOfTheDay < 12) {

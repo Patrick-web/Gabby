@@ -23,7 +23,7 @@ const ChatBubble = ({
           borderRadius: 20,
           borderTopRightRadius: from == "user" ? 0 : 20,
           borderTopLeftRadius: from == "user" ? 20 : 0,
-          maxWidth: fullwidth ? "100%" : "48%",
+          maxWidth: fullwidth ? "90%" : "48%",
           padding: 10,
         }}>
         <Text style={{ color: "white" }}>{text}</Text>

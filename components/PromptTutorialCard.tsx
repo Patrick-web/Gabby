@@ -1,14 +1,9 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-interface PromptTutorial {
-  title: string;
-  promptBase: string;
-  promptInput: string;
-  promptExample: string;
-}
+import { PromptTutorialType } from "../types";
 
-const PromptTutorialCard = ({ prompt }: { prompt: PromptTutorial }) => {
+const PromptTutorialCard = ({ prompt }: { prompt: PromptTutorialType }) => {
   return (
     <View
       style={{
