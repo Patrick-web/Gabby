@@ -271,6 +271,8 @@ dependencies {
     
     implementation project(':react-native-tts')
 
+    implementation project(':react-native-contacts')
+
     implementation "androidx.appcompat:appcompat:1.0.0"
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"

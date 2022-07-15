@@ -2,6 +2,7 @@ import { actions } from "../stores/staticStore";
 import { Contact } from "react-native-contacts";
 import call from "react-native-phone-call";
 import Tts from "react-native-tts";
+import { removeHandler } from "./engine";
 
 class BaseOfAResolver {
   handlerID: string = "";
@@ -56,10 +57,9 @@ export class MakeCallResolver extends BaseOfAResolver {
     }
     if (this.flowLevel == 0) {
       this.flow0(text);
-    }
-    if (this.flowLevel == 2) {
+    } else if (this.flowLevel == 2) {
       this.flow2(text);
-      this.removeHandler();
+      // this.removeHandler();
     }
   }
   flow0(text: string) {
@@ -69,7 +69,7 @@ export class MakeCallResolver extends BaseOfAResolver {
         If they provided a contactName, it calls flow1. 
         If the user did not provide a contactName, it returns a prompt for the contactName
       */
-    this.userContactName = text.replace(/.*call/, "") || null;
+    this.userContactName = text.replace(/.*call/, "").trim() || null;
     console.log(`userContactName is: ${this.userContactName}`);
     if (this.userContactName) {
       this.flow1();
@@ -90,6 +90,7 @@ export class MakeCallResolver extends BaseOfAResolver {
     if (contactName) {
       this.userContactName = contactName;
     }
+    console.log(this.userContactName);
     this.possibleContacts = actions.getPossibleContacts(
       this.userContactName as string
     );
@@ -99,33 +100,48 @@ export class MakeCallResolver extends BaseOfAResolver {
     } else if (this.possibleContacts.length == 1) {
       this.makeCall(this.possibleContacts[0]);
     } else if (this.possibleContacts.length > 1) {
-      this.flowLevel = 2;
+      console.log(this.possibleContacts[0]);
       const contactNames = this.possibleContacts
-        .map((contact) => contact.displayName)
-        .join(" , ");
+        .map((contact: Contact) => contact.displayName)
+        .join(", ");
       this.sendAMessage(
         `Which of the following should I call: ${contactNames}`
       );
+      this.flowLevel = 2;
+      setTimeout(() => {
+        this.enableMic();
+      }, 8000);
     }
   }
   flow2(text: string) {
-    const pickedPossibleContactIndex = text.includes("first")
-      ? 0
-      : text.includes("second")
-      ? 1
-      : text.includes("third")
-      ? 2
-      : text.includes("forth")
-      ? 3
-      : 4;
-    const selectedContact = this.possibleContacts[pickedPossibleContactIndex];
-    this.makeCall(selectedContact);
-    this.sendAMessage(`Calling ${selectedContact.displayName}`);
+    console.log("In flow2");
+    if (text) {
+      const pickedPossibleContactIndex =
+        text.includes("first") || text.includes("one")
+          ? 0
+          : text.includes("second") || text.includes("two")
+          ? 1
+          : text.includes("third") || text.includes("three")
+          ? 2
+          : text.includes("fourth") || text.includes("last")
+          ? 3
+          : 4;
+      const selectedContact = this.possibleContacts[pickedPossibleContactIndex];
+      if (selectedContact) {
+        this.sendAMessage(`Calling ${selectedContact.displayName}`);
+        this.makeCall(selectedContact);
+      }
+    } else {
+      // removeHandler();
+      this.flowLevel = 0;
+    }
   }
   makeCall(contact: Contact) {
+    console.log("In makeCall");
     this.removeHandler();
+    this.flowLevel = 0;
     const args = {
-      number: contact.phoneNumbers[0], // String value with the number to call
+      number: contact.phoneNumbers[0].number, // String value with the number to call
       prompt: false, // Optional boolean property. Determines if the user should be prompted prior to the call
       skipCanOpen: true, // Skip the canOpenURL check
     };

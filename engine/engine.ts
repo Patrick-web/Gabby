@@ -1,3 +1,4 @@
+import Tts from "react-native-tts";
 import { HandlerStateType } from "../types";
 import { MakeCallResolver } from "./Resolvers";
 
@@ -45,11 +46,18 @@ export function removeHandler() {
   handlerState.handlerPicked = false;
 }
 
+let addChatFx: Function;
+function sendAMessage(text: string) {
+  addChatFx({ from: "assistant", text });
+  Tts.speak(text);
+}
+
 export function setCoreFx(
   _addChatFx: Function,
   _toggleSpeakFx: Function,
   _setHandler: Function
 ) {
+  addChatFx = _addChatFx;
   makeCallHandler.setCoreFunctions(
     _addChatFx,
     _toggleSpeakFx,
@@ -66,9 +74,9 @@ export function decisionMaker(spokenText: string) {
     console.log(`Handler is ${handlerID}`);
     if (handlerID) {
       const handler = commands.get(handlerID);
-      return handler.handleInput(spokenText);
+      handler.handleInput(spokenText);
     } else {
-      return "Sorry I didn't get that";
+      sendAMessage("Sorry I don't understand that");
     }
   }
 

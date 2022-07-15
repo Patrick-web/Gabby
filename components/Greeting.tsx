@@ -58,7 +58,7 @@ const Greeting = ({ isListening: isListening }: { isListening: boolean }) => {
             }}
             source={require("../assets/night-icon.png")}
           />
-          <Text style={styles.greetingText}> Night Patrick </Text>
+          <Text style={styles.greetingText}> Its Night Patrick </Text>
         </View>
       )}
       {timeOfDay == "Evening" && (

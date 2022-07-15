@@ -7,7 +7,6 @@
  */
 
 import React, { useEffect, useState } from "react";
-import Voice from "@react-native-voice/voice";
 
 import {
   Platform,
@@ -26,7 +25,7 @@ import Tabs from "./components/Tabs";
 
 import { TabsType } from "./types";
 import { GlobalContext } from "./context/globalContext";
-import { ResolversContext } from "./context/ResolversContext";
+import { initStore } from "./stores/staticStore";
 
 if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -58,10 +57,9 @@ const App = () => {
       setActiveTab("home");
     }
   }
+
   useEffect(() => {
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
+    initStore();
   }, []);
 
   return (
