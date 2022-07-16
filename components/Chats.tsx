@@ -17,7 +17,7 @@ const Chats = ({ partialSpeechResults }: { partialSpeechResults: string }) => {
         paddingHorizontal: 10,
         paddingBottom: 40,
         marginTop: isListening ? 80 : 0,
-        marginBottom: 120,
+        marginBottom: 140,
       }}>
       <ChatBubble fullwidth={false} from={"assistant"} text="How Can I Help" />
       {chats.map((chat: any, index: number) => (

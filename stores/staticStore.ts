@@ -31,6 +31,44 @@ export const actions = {
 
 export async function initStore() {
   await getContacts();
+  await requestPhoneCallPermission();
+  await requestSendSMSPermission();
+}
+
+async function requestSendSMSPermission() {
+  const hasSMSPermission = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.SEND_SMS
+  );
+  console.log(`Send SMS permission: ${hasSMSPermission}`);
+  if (hasSMSPermission) return;
+  const response = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.SEND_SMS,
+    {
+      title: "Grant SMS permission",
+      message: "In order to send messsages",
+      buttonPositive: "Allow",
+      buttonNegative: "Deny",
+    }
+  );
+  console.log(`Send SMS Request: ${response}`);
+}
+
+async function requestPhoneCallPermission() {
+  const hasCallPermission = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.CALL_PHONE
+  );
+  console.log(`Call phone permission: ${hasCallPermission}`);
+  if (hasCallPermission) return;
+  const response = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.CALL_PHONE,
+    {
+      title: "Grant access to make calls",
+      message: "In order to make calls",
+      buttonPositive: "Allow",
+      buttonNegative: "Deny",
+    }
+  );
+  console.log(`Call Request: ${response}`);
 }
 
 async function getContacts() {

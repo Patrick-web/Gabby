@@ -22,6 +22,7 @@ const Greeting = ({ isListening: isListening }: { isListening: boolean }) => {
       style={{
         opacity: isListening ? 0 : 1,
         marginTop: 10,
+        marginBottom: 10,
       }}>
       {timeOfDay == "Unknown" && (
         <View style={styles.greeting}>

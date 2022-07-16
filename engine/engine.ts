@@ -1,6 +1,6 @@
 import Tts from "react-native-tts";
 import { HandlerStateType } from "../types";
-import { MakeCallResolver } from "./Resolvers";
+import { MakeCallHandler, SendMessageHandler } from "./Handlers";
 
 const keyphrases = [
   "hello",
@@ -10,6 +10,7 @@ const keyphrases = [
   "call",
   "message",
   "text",
+  "sms",
   "weather",
   "temperature",
   "email",
@@ -21,8 +22,12 @@ const keyphrases = [
 
 const commands = new Map();
 
-const makeCallHandler = new MakeCallResolver();
-commands.set("call", makeCallHandler);
+const callHandler = new MakeCallHandler();
+commands.set("call", callHandler);
+const messageHandler = new SendMessageHandler();
+commands.set("message", messageHandler);
+commands.set("text", messageHandler);
+commands.set("sms", messageHandler);
 
 //State that influences the decisionMaker
 /*
@@ -52,32 +57,31 @@ function sendAMessage(text: string) {
   Tts.speak(text);
 }
 
-export function setCoreFx(
-  _addChatFx: Function,
-  _toggleSpeakFx: Function,
-  _setHandler: Function
-) {
+export function setCoreFx(_addChatFx: Function, _toggleSpeakFx: Function) {
   addChatFx = _addChatFx;
-  makeCallHandler.setCoreFunctions(
-    _addChatFx,
-    _toggleSpeakFx,
-    setHandler,
-    removeHandler
+  commands.forEach((handler) =>
+    handler.setCoreFunctions(
+      _addChatFx,
+      _toggleSpeakFx,
+      setHandler,
+      removeHandler
+    )
   );
 }
 
 export function decisionMaker(spokenText: string) {
   if (handlerState.handlerPicked == false) {
     const handlerID = keyphrases.find((phrase: string) =>
-      spokenText.includes(phrase)
+      spokenText.toLowerCase().includes(phrase)
     );
     console.log(`Handler is ${handlerID}`);
     if (handlerID) {
       const handler = commands.get(handlerID);
       handler.handleInput(spokenText);
     } else {
-      sendAMessage("Sorry I don't understand that");
+      sendAMessage("Sorry, I don't understand that");
     }
+    return;
   }
 
   if (handlerState.handlerPicked == true) {

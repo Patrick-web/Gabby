@@ -49,7 +49,7 @@ const App = () => {
   }
 
   function setIsListening(state: boolean) {
-    console.log("speak pressed");
+    console.log(`listening: ${state}`);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     if (activeTab === "home") {
       setListening(state);

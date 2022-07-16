@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import Tts from "react-native-tts";
 import Voice, { SpeechResultsEvent } from "@react-native-voice/voice";
 import { Image, Pressable, Text } from "react-native";
@@ -18,7 +18,6 @@ const SpeakButton = ({
   _setPartialSpeechResults: Function;
 }) => {
   const { addChat } = useContext(GlobalContext);
-  const [activeResolver, setActiveResolver] = useState<string | null>(null);
 
   const onSpeechEnd = () => {
     _setPartialSpeechResults("");
@@ -33,11 +32,13 @@ const SpeakButton = ({
 
   const onSpeechResults = (e: SpeechResultsEvent) => {
     if (!e.value) {
+      removeHandler();
       return;
     }
     const spokenText = e.value[0];
     addChat({ from: "user", text: spokenText });
     _setPartialSpeechResults("");
+    console.log("Calling decisionMaker-&&&");
     decisionMaker(spokenText);
   };
 
@@ -46,6 +47,7 @@ const SpeakButton = ({
   };
 
   const startVoiceRecognition = async () => {
+    Tts.stop();
     try {
       await Voice.start("en-US");
     } catch (e) {
@@ -61,7 +63,7 @@ const SpeakButton = ({
     }
   };
 
-  function toggleRecognition(turnOn: boolean) {
+  function toggleRecognition(turnOn?: boolean) {
     if (turnOn) {
       startVoiceRecognition();
       toggleListenMode(true);
@@ -95,7 +97,9 @@ const SpeakButton = ({
 
   return (
     <Pressable
-      onPress={toggleRecognition}
+      onPress={() => {
+        toggleRecognition();
+      }}
       style={{
         backgroundColor: "crimson",
         height: isListening ? 50 : activeTab == "home" ? 100 : 60,
