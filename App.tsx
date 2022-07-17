@@ -14,6 +14,7 @@ import {
   StyleSheet,
   LayoutAnimation,
   View,
+  LogBox,
 } from "react-native";
 
 import TabSwitcher from "./components/TabSwitcher";
@@ -26,6 +27,8 @@ import Tabs from "./components/Tabs";
 import { TabsType } from "./types";
 import { GlobalContext } from "./context/globalContext";
 import { initStore } from "./stores/staticStore";
+
+LogBox.ignoreLogs(["new NativeEventEmitter"]);
 
 if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -109,7 +112,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#050615",
+    backgroundColor: "black",
     alignItems: "center",
     justifyContent: "center",
   },

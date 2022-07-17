@@ -1,12 +1,16 @@
 import { PermissionsAndroid } from "react-native";
 import Contacts, { Contact } from "react-native-contacts";
+import RNInstalledApplication from "react-native-installed-application";
+import { AppType } from "../types";
 
 interface StaticState {
   contacts: Contact[];
+  apps: AppType[];
 }
 
 export const state: StaticState = {
   contacts: [],
+  apps: [],
 };
 
 export const actions = {
@@ -27,12 +31,23 @@ export const actions = {
     // console.log("=====");
     return possibles.slice(0, 4);
   },
+  getApps: () => state.apps,
 };
 
 export async function initStore() {
   await getContacts();
   await requestPhoneCallPermission();
   await requestSendSMSPermission();
+  await getApps();
+}
+
+async function getApps() {
+  try {
+    const apps = await RNInstalledApplication.getApps();
+    state.apps = apps;
+  } catch (error) {
+    console.log("Error");
+  }
 }
 
 async function requestSendSMSPermission() {

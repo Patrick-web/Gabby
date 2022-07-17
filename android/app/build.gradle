@@ -275,6 +275,8 @@ dependencies {
     
     implementation project(':RNSendIntentModule')
 
+    implementation project(':RNSendDirectSmsModule')
+    
     implementation "androidx.appcompat:appcompat:1.0.0"
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"

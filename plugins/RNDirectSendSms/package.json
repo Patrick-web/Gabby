@@ -1,0 +1,19 @@
+{
+  "name": "react-native-send-direct-sms",
+  "version": "0.0.1",
+  "description": "React Native Android module to send sms without opening message app",
+  "main": "index.ts",
+  "keywords": [
+    "react",
+    "react-native",
+    "react-component",
+    "send",
+    "sms",
+    "android"
+  ],
+  "author": "Patrick-web",
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": "*"
+  }
+}

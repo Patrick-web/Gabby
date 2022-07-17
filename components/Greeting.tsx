@@ -28,8 +28,8 @@ const Greeting = ({ isListening: isListening }: { isListening: boolean }) => {
         <View style={styles.greeting}>
           <Image
             style={{
-              width: isListening ? 0 : 150,
-              height: isListening ? 0 : 150,
+              width: isListening ? 0 : 100,
+              height: isListening ? 0 : 100,
             }}
             source={require("../assets/galaxy-icon.png")}
           />
