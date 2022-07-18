@@ -1,105 +1,84 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
-
-import { TimeOfDayType } from "../types";
+import { GlobalContext } from "../context/globalContext";
 
 const Greeting = ({ isListening: isListening }: { isListening: boolean }) => {
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDayType>("Unknown");
+  const [greeting, setGreeting] = useState({
+    timeOfDay: "Unknown",
+    image: require("../assets/galaxy-icon.png"),
+    text: `Hey Patrick`,
+  });
+  const { chats } = useContext(GlobalContext);
   useEffect(() => {
     const hourOfTheDay = new Date().getHours();
     if (hourOfTheDay > 4 && hourOfTheDay < 12) {
-      setTimeOfDay("Morning");
+      setGreeting({
+        timeOfDay: "Morning",
+        image: require("../assets/morning-icon.png"),
+        text: "Good Morning",
+      });
     } else if (hourOfTheDay > 12 && hourOfTheDay < 17) {
-      setTimeOfDay("Afternoon");
+      setGreeting({
+        timeOfDay: "Afternoon",
+        image: require("../assets/afternoon-icon.png"),
+        text: "Good Afternoon",
+      });
     } else if (hourOfTheDay > 17 && hourOfTheDay < 20) {
-      setTimeOfDay("Evening");
+      setGreeting({
+        timeOfDay: "Evening",
+        image: require("../assets/sunset-icon.png"),
+        text: "Good Evening",
+      });
     } else if (hourOfTheDay > 19 && hourOfTheDay < 25) {
-      setTimeOfDay("Night");
+      setGreeting({
+        timeOfDay: "Night",
+        image: require("../assets/night-icon.png"),
+        text: "A Beautiful Night",
+      });
     }
   }, []);
   return (
     <View
       style={{
         opacity: isListening ? 0 : 1,
-        marginTop: 10,
-        marginBottom: 10,
+        marginTop: chats.length > 1 ? 0 : 10,
+        marginBottom: chats.length > 1 ? 0 : 10,
       }}>
-      {timeOfDay == "Unknown" && (
-        <View style={styles.greeting}>
-          <Image
-            style={{
-              width: isListening ? 0 : 100,
-              height: isListening ? 0 : 100,
-            }}
-            source={require("../assets/galaxy-icon.png")}
-          />
-          <Text style={styles.greetingText}> Hey Patrick </Text>
-        </View>
-      )}
-
-      {timeOfDay == "Morning" && (
-        <View style={styles.greeting}>
-          <Image
-            style={{
-              width: isListening ? 0 : 150,
-              height: isListening ? 0 : 150,
-            }}
-            source={require("../assets/morning-icon.png")}
-          />
-          <Text style={styles.greetingText}> Morning Patrick </Text>
-        </View>
-      )}
-
-      {timeOfDay == "Night" && (
-        <View style={styles.greeting}>
-          <Image
-            style={{
-              width: isListening ? 0 : 150,
-              height: isListening ? 0 : 150,
-            }}
-            source={require("../assets/night-icon.png")}
-          />
-          <Text style={styles.greetingText}> Its Night Patrick </Text>
-        </View>
-      )}
-      {timeOfDay == "Evening" && (
-        <View style={styles.greeting}>
-          <Image
-            style={{
-              width: isListening ? 0 : 150,
-              height: isListening ? 0 : 150,
-            }}
-            source={require("../assets/sunset-icon.png")}
-          />
-          <Text style={styles.greetingText}> Evening Patrick </Text>
-        </View>
-      )}
-      {timeOfDay == "Afternoon" && (
-        <View style={styles.greeting}>
-          <Image
-            style={{
-              width: isListening ? 0 : 150,
-              height: isListening ? 0 : 150,
-            }}
-            source={require("../assets/afternoon-icon.png")}
-          />
-          <Text style={styles.greetingText}> Afternoon Patrick </Text>
-        </View>
-      )}
+      <View
+        style={{
+          ...styles.greeting,
+          flexDirection: chats.length > 1 ? "row" : "column",
+          justifyContent: chats.length > 1 ? "flex-start" : "space-between",
+          height: chats.length > 1 ? 60 : 200,
+        }}>
+        <Image
+          style={{
+            width: chats.length > 1 ? 35 : 150,
+            height: chats.length > 1 ? 35 : 150,
+            marginRight: chats.length > 1 ? 10 : 0,
+            marginLeft: chats.length > 1 ? 20 : 0,
+          }}
+          source={greeting.image}
+        />
+        <Text
+          style={{
+            ...styles.greetingText,
+            fontSize: chats.length > 1 ? 20 : 30,
+          }}>
+          {greeting.text}
+        </Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   greeting: {
-    flexDirection: "column",
-    justifyContent: "space-between",
     alignItems: "center",
-    height: 200,
+    width: "100%",
   },
   greetingText: {
     color: "white",
-    fontSize: 30,
     fontWeight: "bold",
   },
   greetingImage: {

@@ -2,6 +2,8 @@ import Tts from "react-native-tts";
 import { HandlerStateType, KeywordsType } from "../types";
 import {
   AppOpenerHandler,
+  GiveQuoteHandler,
+  GoogleItHandler,
   MakeCallHandler,
   SendEmailHandeler,
   SendMessageHandler,
@@ -28,6 +30,13 @@ const keyphrases: KeywordsType[] = [
   "brightness",
   "reminder",
   "joke",
+  "quote",
+  "google",
+  "who",
+  "why",
+  "when",
+  "how",
+  "what",
 ];
 
 const commands = new Map<KeywordsType, any>();
@@ -47,6 +56,15 @@ const emailHandler = new SendEmailHandeler();
 commands.set("email", emailHandler);
 const jokeHandler = new TellJokeHandler();
 commands.set("joke", jokeHandler);
+const quoteHandler = new GiveQuoteHandler();
+commands.set("quote", quoteHandler);
+const googleHandler = new GoogleItHandler();
+commands.set("google", googleHandler);
+commands.set("who", googleHandler);
+commands.set("why", googleHandler);
+commands.set("when", googleHandler);
+commands.set("how", googleHandler);
+commands.set("what", googleHandler);
 //State that influences the decisionMaker
 /*
   State 1 => No handler has been picked, look for appropriate handler

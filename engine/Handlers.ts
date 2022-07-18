@@ -4,7 +4,7 @@ import Tts from "react-native-tts";
 import SendIntentAndroid from "react-native-send-intent";
 import { sendDirectSms } from "../plugins/RNDirectSendSms/index";
 import { Linking } from "react-native";
-import { JokeType } from "../types";
+import { ChatBubbleVariants, ChatType, JokeType, QuoteType } from "../types";
 
 class BaseHandler {
   handlerID: string = "";
@@ -12,7 +12,7 @@ class BaseHandler {
   flowLevel = 0; // Current step in the conversation flow
   inFlow = false; // If a conversation flow is in progress
 
-  addChatFx: null | Function = null;
+  addChatFx: (chat: ChatType) => void = () => {};
   toggleSpeakFx: Function | null = null;
   setHandler: Function = () => {};
   removeHandler: Function = () => {};
@@ -20,7 +20,7 @@ class BaseHandler {
   constructor() {}
 
   setCoreFunctions(
-    _addChatFx: Function,
+    _addChatFx: (chat: ChatType) => void,
     _toggleSpeakFx: Function,
     _setHandler: Function,
     _removeHandler: Function
@@ -30,9 +30,18 @@ class BaseHandler {
     this.setHandler = _setHandler;
     this.removeHandler = _removeHandler;
   }
-  sendAMessage(text: string) {
+  sendAMessage(
+    text: string,
+    silent: boolean = false,
+    variant: ChatBubbleVariants = "basic text"
+  ) {
     if (this.addChatFx) {
-      this.addChatFx({ from: "assistant", text });
+      this.addChatFx({
+        variant,
+        text,
+        extraData: { from: "assistant" },
+      });
+      if (silent) return;
       Tts.speak(text);
     }
   }
@@ -707,5 +716,31 @@ export class TellJokeHandler extends BaseHandler {
     setTimeout(() => {
       this.sendAMessage(jokeObj.punchline);
     }, 5000);
+  }
+}
+
+export class GiveQuoteHandler extends BaseHandler {
+  async handleInput() {
+    this.sendAMessage("Ok...");
+    const response = await fetch("https://api.quotable.io/random");
+    const quoteObj: QuoteType = await response.json();
+
+    this.sendAMessage(quoteObj.content);
+
+    setTimeout(() => {
+      this.sendAMessage(`by ${quoteObj.author}`);
+    }, 5000);
+  }
+}
+
+export class GoogleItHandler extends BaseHandler {
+  handleInput(text: string) {
+    let query = text;
+    if (text.toLowerCase().startsWith("google")) {
+      query = text.replace(/google /i, "");
+    }
+    const url = encodeURI(`https://www.google.com/search?hl=en&q=${query}`);
+    this.sendAMessage("Let me check...");
+    this.addChatFx({ text: "", variant: "google", extraData: { url } });
   }
 }

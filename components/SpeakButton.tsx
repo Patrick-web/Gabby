@@ -5,6 +5,7 @@ import { Image, Pressable, Text } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { decisionMaker, setCoreFx, removeHandler } from "../engine/engine";
 import { GlobalContext } from "../context/globalContext";
+import { ChatType } from "../types";
 
 const SpeakButton = ({
   isListening,
@@ -17,7 +18,8 @@ const SpeakButton = ({
   toggleListenMode: Function;
   _setPartialSpeechResults: Function;
 }) => {
-  const { addChat } = useContext(GlobalContext);
+  const { addChat }: { addChat: (chat: ChatType) => void } =
+    useContext(GlobalContext);
 
   const onSpeechEnd = () => {
     _setPartialSpeechResults("");
@@ -36,7 +38,11 @@ const SpeakButton = ({
       return;
     }
     const spokenText = e.value[0];
-    addChat({ from: "user", text: spokenText });
+    addChat({
+      extraData: { from: "user" },
+      variant: "basic text",
+      text: spokenText,
+    });
     _setPartialSpeechResults("");
     console.log("Calling decisionMaker-&&&");
     decisionMaker(spokenText);

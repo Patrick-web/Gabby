@@ -24,7 +24,7 @@ import Greeting from "./components/Greeting";
 import Chats from "./components/Chats";
 import Tabs from "./components/Tabs";
 
-import { TabsType } from "./types";
+import { ChatType, TabsType } from "./types";
 import { GlobalContext } from "./context/globalContext";
 import { initStore } from "./stores/staticStore";
 
@@ -40,9 +40,9 @@ const App = () => {
   const [listening, setListening] = useState(false);
   const [activeTab, setActiveTab] = useState<TabsType>("home");
   const [partialSpeechResults, setPartialSpeechResults] = useState("");
-  const [chats, setAllChats] = useState<any[]>([]);
+  const [chats, setAllChats] = useState<ChatType[]>([]);
 
-  function addChat(chat: any) {
+  function addChat(chat: ChatType) {
     setTimeout(() => {
       setAllChats((arr) => [...arr, chat]);
     }, 1000);

@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, ScrollView } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import PromptTutorialCard from "./PromptTutorialCard";
-import ChatBubble from "./ChatBubble";
 
 import { PromptTutorialType } from "../types";
 
@@ -14,8 +13,7 @@ const Tabs = ({ activeTab }: { activeTab: "tutorial" | "commands" }) => {
     promptExample: "Call Jenny",
   };
   return (
-    <View
-      style={{ width: "100%", overflow: "hidden", }}>
+    <View style={{ width: "100%", overflow: "hidden" }}>
       <ScrollView
         style={{
           height: activeTab == "commands" ? "0%" : "100%",

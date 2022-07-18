@@ -1,8 +1,3 @@
-export interface ChatType {
-  text: string;
-  from: "user" | "assistant";
-}
-
 export interface PromptTutorialType {
   title: string;
   promptBase: string;
@@ -48,6 +43,29 @@ export interface JokeType {
   NSFW: boolean;
 }
 
+export interface QuoteType {
+  _id: string;
+  content: string;
+  author: string;
+  tags: string[];
+  authorSlug: string;
+  length: number;
+  dateAdded: string;
+  dateModified: string;
+}
+
+export type ChatBubbleVariants =
+  | "basic text"
+  | "weather"
+  | "google"
+  | "youtube";
+
+export interface ChatType {
+  variant: ChatBubbleVariants;
+  text: string;
+  extraData: any;
+}
+
 export type KeywordsType =
   | "hello"
   | "hi"
@@ -63,7 +81,14 @@ export type KeywordsType =
   | "temperature"
   | "email"
   | "joke"
+  | "quote"
   | "notifications"
   | "launch"
   | "brightness"
-  | "reminder";
+  | "reminder"
+  | "google"
+  | "who"
+  | "why"
+  | "when"
+  | "how"
+  | "what";
