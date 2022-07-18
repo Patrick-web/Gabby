@@ -12,9 +12,6 @@ import {
 } from "./Handlers";
 
 const keyphrases: KeywordsType[] = [
-  "hello",
-  "hi",
-  "hey",
   "morning",
   "open",
   "whatsapp",
@@ -22,7 +19,7 @@ const keyphrases: KeywordsType[] = [
   "message",
   "text",
   "sms",
-  "weather",
+  // "weather",
   "temperature",
   "email",
   "notifications",
@@ -37,6 +34,7 @@ const keyphrases: KeywordsType[] = [
   "when",
   "how",
   "what",
+  "which",
 ];
 
 const commands = new Map<KeywordsType, any>();
@@ -65,6 +63,7 @@ commands.set("why", googleHandler);
 commands.set("when", googleHandler);
 commands.set("how", googleHandler);
 commands.set("what", googleHandler);
+commands.set("which", googleHandler);
 //State that influences the decisionMaker
 /*
   State 1 => No handler has been picked, look for appropriate handler
@@ -111,6 +110,13 @@ export function setCoreFx(_addChatFx: Function, _toggleSpeakFx: Function) {
 }
 
 export function decisionMaker(spokenText: string) {
+  if (
+    spokenText.toLowerCase() == "start over" ||
+    spokenText.toLowerCase() == "reset"
+  ) {
+    removeHandler();
+    return;
+  }
   try {
     if (handlerState.handlerPicked == false) {
       const handlerID = keyphrases.find((phrase: string) =>
@@ -119,9 +125,10 @@ export function decisionMaker(spokenText: string) {
       console.log(`Handler is ${handlerID}`);
       if (handlerID) {
         const handler = commands.get(handlerID);
-        handler.handleInput(spokenText);
+        handler.handleInput(spokenText.toLowerCase());
       } else {
         sendAMessage("Sorry, I don't understand that");
+        removeHandler();
       }
       return;
     }
@@ -130,9 +137,11 @@ export function decisionMaker(spokenText: string) {
       const handlerID = handlerState.handlerID;
       console.log(`Flow Handler is ${handlerID}`);
       const handler = commands.get(handlerID);
-      return handler.handleInput(spokenText);
+      return handler.handleInput(spokenText.toLowerCase());
     }
   } catch (error) {
+    sendAMessage("Sorry, an error occured");
     console.log("Error in decisionMaker");
+    removeHandler();
   }
 }

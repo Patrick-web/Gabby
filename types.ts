@@ -91,4 +91,7 @@ export type KeywordsType =
   | "why"
   | "when"
   | "how"
-  | "what";
+  | "what"
+  | "which"
+  | "start over"
+  | " reset";

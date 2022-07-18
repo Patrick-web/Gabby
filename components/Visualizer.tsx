@@ -38,7 +38,7 @@ const Visualizer = ({ isListening }: { isListening: boolean }) => {
           marginTop: isListening ? 20 : 150,
           opacity: isListening ? 1 : 0,
         }}>
-        Am Listening...
+        I'm Listening...
       </Text>
     </View>
   );

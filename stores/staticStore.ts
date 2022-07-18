@@ -25,6 +25,7 @@ export const actions = {
           contact.suffix?.toLowerCase().includes(text.toLowerCase())
       )
       .filter((contact) => contact?.phoneNumbers[0]?.number);
+    console.log(state.contacts[0].displayName);
     // console.log("=====");
     // console.log(possibles[0]);
     // console.log(possibles[1]);
