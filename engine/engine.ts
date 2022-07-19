@@ -1,69 +1,77 @@
-import Tts from "react-native-tts";
-import { HandlerStateType, KeywordsType } from "../types";
+import Tts from 'react-native-tts';
+import {HandlerStateType, KeywordsType} from '../types';
 import {
   AppOpenerHandler,
+  GetMemesHandler,
   GiveQuoteHandler,
   GoogleItHandler,
   MakeCallHandler,
+  PlayGamesHandler,
   SendEmailHandeler,
   SendMessageHandler,
   SendWhatsappMessageHandler,
   TellJokeHandler,
-} from "./Handlers";
+} from './Handlers';
 
 const keyphrases: KeywordsType[] = [
-  "morning",
-  "open",
-  "whatsapp",
-  "call",
-  "message",
-  "text",
-  "sms",
+  'morning',
+  'open',
+  'whatsapp',
+  'call',
+  'message',
+  'text',
+  'sms',
   // "weather",
-  "temperature",
-  "email",
-  "notifications",
-  "launch",
-  "brightness",
-  "reminder",
-  "joke",
-  "quote",
-  "google",
-  "who",
-  "why",
-  "when",
-  "how",
-  "what",
-  "which",
+  'temperature',
+  'email',
+  'notifications',
+  'launch',
+  'brightness',
+  'reminder',
+  'joke',
+  'quote',
+  'google',
+  'memes',
+  'play',
+  'who',
+  'why',
+  'when',
+  'how',
+  'what',
+  'which',
 ];
 
 const commands = new Map<KeywordsType, any>();
 
 const callHandler = new MakeCallHandler();
-commands.set("call", callHandler);
+commands.set('call', callHandler);
 const messageHandler = new SendMessageHandler();
-commands.set("message", messageHandler);
-commands.set("text", messageHandler);
-commands.set("sms", messageHandler);
+commands.set('message', messageHandler);
+commands.set('text', messageHandler);
+commands.set('sms', messageHandler);
 const appOpenHandler = new AppOpenerHandler();
-commands.set("open", appOpenHandler);
-commands.set("launch", appOpenHandler);
+commands.set('open', appOpenHandler);
+commands.set('launch', appOpenHandler);
 const whatsappMessageHandler = new SendWhatsappMessageHandler();
-commands.set("whatsapp", whatsappMessageHandler);
+commands.set('whatsapp', whatsappMessageHandler);
 const emailHandler = new SendEmailHandeler();
-commands.set("email", emailHandler);
+commands.set('email', emailHandler);
 const jokeHandler = new TellJokeHandler();
-commands.set("joke", jokeHandler);
+commands.set('joke', jokeHandler);
 const quoteHandler = new GiveQuoteHandler();
-commands.set("quote", quoteHandler);
+commands.set('quote', quoteHandler);
 const googleHandler = new GoogleItHandler();
-commands.set("google", googleHandler);
-commands.set("who", googleHandler);
-commands.set("why", googleHandler);
-commands.set("when", googleHandler);
-commands.set("how", googleHandler);
-commands.set("what", googleHandler);
-commands.set("which", googleHandler);
+commands.set('google', googleHandler);
+commands.set('who', googleHandler);
+commands.set('why', googleHandler);
+commands.set('when', googleHandler);
+commands.set('how', googleHandler);
+commands.set('what', googleHandler);
+commands.set('which', googleHandler);
+const memesHandler = new GetMemesHandler();
+commands.set('memes', memesHandler);
+const gamesHandler = new PlayGamesHandler();
+commands.set('play', gamesHandler);
 //State that influences the decisionMaker
 /*
   State 1 => No handler has been picked, look for appropriate handler
@@ -93,26 +101,26 @@ export function removeHandler() {
 
 let addChatFx: Function;
 function sendAMessage(text: string) {
-  addChatFx({ from: "assistant", text });
+  addChatFx({from: 'assistant', text});
   Tts.speak(text);
 }
 
 export function setCoreFx(_addChatFx: Function, _toggleSpeakFx: Function) {
   addChatFx = _addChatFx;
-  commands.forEach((handler) =>
+  commands.forEach(handler =>
     handler.setCoreFunctions(
       _addChatFx,
       _toggleSpeakFx,
       setHandler,
-      removeHandler
-    )
+      removeHandler,
+    ),
   );
 }
 
 export function decisionMaker(spokenText: string) {
   if (
-    spokenText.toLowerCase() == "start over" ||
-    spokenText.toLowerCase() == "reset"
+    spokenText.toLowerCase() == 'start over' ||
+    spokenText.toLowerCase() == 'reset'
   ) {
     removeHandler();
     return;
@@ -120,7 +128,7 @@ export function decisionMaker(spokenText: string) {
   try {
     if (handlerState.handlerPicked == false) {
       const handlerID = keyphrases.find((phrase: string) =>
-        spokenText.toLowerCase().includes(phrase)
+        spokenText.toLowerCase().includes(phrase),
       );
       console.log(`Handler is ${handlerID}`);
       if (handlerID) {
@@ -140,8 +148,8 @@ export function decisionMaker(spokenText: string) {
       return handler.handleInput(spokenText.toLowerCase());
     }
   } catch (error) {
-    sendAMessage("Sorry, an error occured");
-    console.log("Error in decisionMaker");
+    sendAMessage('Sorry, an error occured');
+    console.log('Error in decisionMaker');
     removeHandler();
   }
 }

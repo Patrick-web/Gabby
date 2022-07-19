@@ -4,6 +4,7 @@ import Svg, { Path } from "react-native-svg";
 import PromptTutorialCard from "./PromptTutorialCard";
 
 import { PromptTutorialType } from "../types";
+import { TextBubble } from "./ChatBubbles";
 
 const Tabs = ({ activeTab }: { activeTab: "tutorial" | "commands" }) => {
   const sp: PromptTutorialType = {
@@ -56,9 +57,8 @@ const Tabs = ({ activeTab }: { activeTab: "tutorial" | "commands" }) => {
               borderBottomLeftRadius: 20,
               width: "32%",
             }}>
-            <ChatBubble fullwidth={true} from={"user"} text={"Call Jane"} />
-            <ChatBubble
-              fullwidth={true}
+            <TextBubble  from={"user"} text={"Call Jane"} />
+            <TextBubble
               from={"user"}
               text={"What is the weather ?"}
             />
@@ -83,13 +83,11 @@ const Tabs = ({ activeTab }: { activeTab: "tutorial" | "commands" }) => {
               width: "45%",
               paddingVertical: 10,
             }}>
-            <ChatBubble
+            <TextBubble
               from={"assistant"}
               text={"Its cloudy. 59 degrees Farenheit"}
-              fullwidth={true}
             />
-            <ChatBubble
-              fullwidth={true}
+            <TextBubble
               from={"assistant"}
               text={"Okay Calling Jane"}
             />

@@ -1,11 +1,11 @@
-import React, { useEffect, useContext } from "react";
-import Tts from "react-native-tts";
-import Voice, { SpeechResultsEvent } from "@react-native-voice/voice";
-import { Image, Pressable, Text } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import { decisionMaker, setCoreFx, removeHandler } from "../engine/engine";
-import { GlobalContext } from "../context/globalContext";
-import { ChatType } from "../types";
+import React, {useEffect, useContext} from 'react';
+import Tts from 'react-native-tts';
+import Voice, {SpeechResultsEvent} from '@react-native-voice/voice';
+import {Image, Pressable, Text} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {decisionMaker, setCoreFx, removeHandler} from '../engine/engine';
+import {GlobalContext} from '../context/globalContext';
+import {ChatType} from '../types';
 
 const SpeakButton = ({
   isListening,
@@ -14,15 +14,15 @@ const SpeakButton = ({
   _setPartialSpeechResults,
 }: {
   isListening: boolean;
-  activeTab: "tutorial" | "commands" | "home";
+  activeTab: 'tutorial' | 'commands' | 'home';
   toggleListenMode: Function;
   _setPartialSpeechResults: Function;
 }) => {
-  const { addChat }: { addChat: (chat: ChatType) => void } =
+  const {addChat}: {addChat: (chat: ChatType) => void} =
     useContext(GlobalContext);
 
   const onSpeechEnd = () => {
-    _setPartialSpeechResults("");
+    _setPartialSpeechResults('');
     toggleListenMode(false);
   };
 
@@ -39,12 +39,12 @@ const SpeakButton = ({
     }
     const spokenText = e.value[0];
     addChat({
-      extraData: { from: "user" },
-      variant: "basic text",
+      extraData: {from: 'user'},
+      variant: 'basic text',
       text: spokenText,
     });
-    _setPartialSpeechResults("");
-    console.log("Calling decisionMaker-&&&");
+    _setPartialSpeechResults('');
+    console.log('Calling decisionMaker-&&&');
     decisionMaker(spokenText);
   };
 
@@ -55,7 +55,7 @@ const SpeakButton = ({
   const startVoiceRecognition = async () => {
     Tts.stop();
     try {
-      await Voice.start("en-US");
+      await Voice.start('en-US');
     } catch (e) {
       console.error(e);
     }
@@ -79,7 +79,7 @@ const SpeakButton = ({
       stopVoiceRecognizing();
       toggleListenMode(false);
     } else {
-      if (activeTab === "home") {
+      if (activeTab === 'home') {
         startVoiceRecognition();
         toggleListenMode(true);
       } else {
@@ -107,41 +107,41 @@ const SpeakButton = ({
         toggleRecognition();
       }}
       style={{
-        backgroundColor: "crimson",
-        height: isListening ? 50 : activeTab == "home" ? 100 : 60,
-        width: isListening ? 180 : activeTab == "home" ? 100 : 60,
+        backgroundColor: 'crimson',
+        height: isListening ? 50 : activeTab == 'home' ? 100 : 60,
+        width: isListening ? 180 : activeTab == 'home' ? 100 : 60,
         borderRadius: 50,
-        position: "absolute",
+        position: 'absolute',
         bottom: 20,
         zIndex: 20,
-        alignSelf: "center",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
       }}>
       {isListening == false && (
         <LinearGradient
           // Background Linear Gradient
-          colors={["#E87BEF", "#FF55A7", "#963CCE"]}
+          colors={['#E87BEF', '#FF55A7', '#963CCE']}
           style={{
-            width: "100%",
-            height: "100%",
-            transform: [{ rotate: "40deg" }],
-            position: "absolute",
+            width: '100%',
+            height: '100%',
+            transform: [{rotate: '40deg'}],
+            position: 'absolute',
           }}
         />
       )}
       {isListening == true ? (
-        <Text style={{ fontSize: 18, fontWeight: "bold", color: "white" }}>
-          Stop Listening
+        <Text style={{fontSize: 18, fontWeight: 'bold', color: 'white'}}>
+          Cancel
         </Text>
       ) : (
         <Image
           style={{
-            width: activeTab == "home" ? 30 : 20,
-            height: activeTab == "home" ? 38 : 26,
+            width: activeTab == 'home' ? 30 : 20,
+            height: activeTab == 'home' ? 38 : 26,
           }}
-          source={require("../assets/mic-icon.png")}
+          source={require('../assets/mic-icon.png')}
         />
       )}
     </Pressable>

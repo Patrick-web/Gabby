@@ -1,33 +1,39 @@
-import React, { useContext, useRef } from "react";
-import { ScrollView } from "react-native";
-import { GlobalContext } from "../context/globalContext";
-import { ChatType } from "../types";
-import { TextBubble, GoogleBubble } from "./ChatBubbles";
+import React, {useContext, useRef} from 'react';
+import {ScrollView} from 'react-native';
+import {GlobalContext} from '../context/globalContext';
+import {ChatType} from '../types';
+import {
+  TextBubble,
+  GoogleBubble,
+  MemesBubble,
+  GamesBubble,
+} from './ChatBubbles';
 
-const Chats = ({ partialSpeechResults }: { partialSpeechResults: string }) => {
-  const { chats, isListening } = useContext(GlobalContext);
+const Chats = ({partialSpeechResults}: {partialSpeechResults: string}) => {
+  const {chats, isListening} = useContext(GlobalContext);
   const scrollViewRef = useRef<any>();
   function onNewChat() {
     if (!scrollViewRef?.current) {
       return;
     }
-    scrollViewRef.current.scrollToEnd({ animated: false });
+    scrollViewRef.current.scrollToEnd({animated: false});
   }
   return (
     <ScrollView
       ref={scrollViewRef}
+      nestedScrollEnabled={true}
       onContentSizeChange={() => onNewChat()}
       style={{
-        width: "100%",
+        width: '100%',
         height: 300,
         paddingHorizontal: 10,
         paddingBottom: 40,
         marginTop: isListening ? 230 : 0,
         marginBottom: 140,
       }}>
-      <TextBubble from={"assistant"} text={"How can I help?"} />
+      <TextBubble from={'assistant'} text={'How can I help?'} />
       {chats.map((chat: ChatType, index: number) => {
-        if (chat.variant == "basic text") {
+        if (chat.variant == 'basic text') {
           return (
             <TextBubble
               from={chat.extraData.from}
@@ -36,12 +42,12 @@ const Chats = ({ partialSpeechResults }: { partialSpeechResults: string }) => {
             />
           );
         }
-        if (chat.variant == "google") {
+        if (chat.variant == 'google') {
           return <GoogleBubble chat={chat} key={index} />;
         }
       })}
-      {partialSpeechResults !== "" && (
-        <TextBubble from={"user"} text={partialSpeechResults} />
+      {partialSpeechResults !== '' && (
+        <TextBubble from={'user'} text={partialSpeechResults} />
       )}
     </ScrollView>
   );
