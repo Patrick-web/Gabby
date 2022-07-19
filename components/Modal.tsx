@@ -67,6 +67,12 @@ const Modal = ({child, setModalChild}: any) => {
         {child == 'memes' && (
           <WebView source={{uri: 'https://redditmemes.netlify.app/'}} />
         )}
+        {child == 'news' && (
+          <WebView
+            source={{uri: 'https://news.google.com'}}
+            style={{marginTop: -80}}
+          />
+        )}
       </View>
     </View>
   );

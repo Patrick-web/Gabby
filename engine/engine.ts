@@ -3,6 +3,7 @@ import {HandlerStateType, KeywordsType} from '../types';
 import {
   AppOpenerHandler,
   GetMemesHandler,
+  GetNewsHandler,
   GiveQuoteHandler,
   GoogleItHandler,
   MakeCallHandler,
@@ -39,6 +40,7 @@ const keyphrases: KeywordsType[] = [
   'how',
   'what',
   'which',
+  'news',
 ];
 
 const commands = new Map<KeywordsType, any>();
@@ -72,6 +74,9 @@ const memesHandler = new GetMemesHandler();
 commands.set('memes', memesHandler);
 const gamesHandler = new PlayGamesHandler();
 commands.set('play', gamesHandler);
+const newsHandler = new GetNewsHandler();
+commands.set('news', newsHandler);
+
 //State that influences the decisionMaker
 /*
   State 1 => No handler has been picked, look for appropriate handler

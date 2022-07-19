@@ -742,6 +742,14 @@ export class GiveQuoteHandler extends BaseHandler {
   }
 }
 
+export class GetNewsHandler extends BaseHandler {
+  handleInput() {
+    this.sendAMessage('Here are the top stories');
+    this.addChatFx({text: '', variant: 'news', extraData: {modalChild:'news'}});
+  }
+}
+
+
 export class GoogleItHandler extends BaseHandler {
   handleInput(text: string) {
     let query = text;

@@ -1,8 +1,6 @@
 export interface PromptTutorialType {
   title: string;
-  promptBase: string;
-  promptInput: string;
-  promptExample: string;
+  example: string;
 }
 
 export type TabsType = 'tutorial' | 'commands' | 'home';
@@ -60,7 +58,8 @@ export type ChatBubbleVariants =
   | 'google'
   | 'youtube'
   | 'games'
-  | 'memes';
+  | 'memes'
+  | 'news';
 
 export interface ChatType {
   variant: ChatBubbleVariants;
@@ -102,4 +101,5 @@ export type KeywordsType =
   | 'sudoku'
   | 'checkers'
   | 'start over'
+  | 'news'
   | ' reset';
