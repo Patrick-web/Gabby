@@ -1,81 +1,98 @@
-import Tts from 'react-native-tts';
-import {HandlerStateType, KeywordsType} from '../types';
+import { ChatBubbleVariants, HandlerStateType, KeywordsType } from "../types";
 import {
   AppOpenerHandler,
+  GetCreatorHandler,
   GetMemesHandler,
   GetNewsHandler,
   GiveQuoteHandler,
   GoogleItHandler,
   MakeCallHandler,
   PlayGamesHandler,
+  PlayMusicHandler,
   SendEmailHandeler,
   SendMessageHandler,
   SendWhatsappMessageHandler,
   TellJokeHandler,
-} from './Handlers';
+  ToggleVoiceHandler,
+} from "./Handlers";
+import { speak } from "./utils";
 
 const keyphrases: KeywordsType[] = [
-  'morning',
-  'open',
-  'whatsapp',
-  'call',
-  'message',
-  'text',
-  'sms',
-  // "weather",
-  'temperature',
-  'email',
-  'notifications',
-  'launch',
-  'brightness',
-  'reminder',
-  'joke',
-  'quote',
-  'google',
-  'memes',
-  'play',
-  'who',
-  'why',
-  'when',
-  'how',
-  'what',
-  'which',
-  'news',
+  "open",
+  "whatsapp",
+  "call",
+  "message",
+  "text",
+  "sms",
+  "email",
+  "launch",
+  "joke",
+  "quote",
+  "google",
+  "memes",
+  "game",
+  "play",
+  "made you",
+  "your creator",
+  "your maker",
+  "voice on",
+  "voice off",
+  "shut up",
+  "talk to me",
+  "who",
+  "why",
+  "when",
+  "how",
+  "what",
+  "which",
+  "news",
+  "morning",
 ];
 
 const commands = new Map<KeywordsType, any>();
 
 const callHandler = new MakeCallHandler();
-commands.set('call', callHandler);
+commands.set("call", callHandler);
 const messageHandler = new SendMessageHandler();
-commands.set('message', messageHandler);
-commands.set('text', messageHandler);
-commands.set('sms', messageHandler);
+commands.set("message", messageHandler);
+commands.set("text", messageHandler);
+commands.set("sms", messageHandler);
 const appOpenHandler = new AppOpenerHandler();
-commands.set('open', appOpenHandler);
-commands.set('launch', appOpenHandler);
+commands.set("open", appOpenHandler);
+commands.set("launch", appOpenHandler);
 const whatsappMessageHandler = new SendWhatsappMessageHandler();
-commands.set('whatsapp', whatsappMessageHandler);
+commands.set("whatsapp", whatsappMessageHandler);
 const emailHandler = new SendEmailHandeler();
-commands.set('email', emailHandler);
+commands.set("email", emailHandler);
 const jokeHandler = new TellJokeHandler();
-commands.set('joke', jokeHandler);
+commands.set("joke", jokeHandler);
 const quoteHandler = new GiveQuoteHandler();
-commands.set('quote', quoteHandler);
+commands.set("quote", quoteHandler);
 const googleHandler = new GoogleItHandler();
-commands.set('google', googleHandler);
-commands.set('who', googleHandler);
-commands.set('why', googleHandler);
-commands.set('when', googleHandler);
-commands.set('how', googleHandler);
-commands.set('what', googleHandler);
-commands.set('which', googleHandler);
+commands.set("google", googleHandler);
+commands.set("who", googleHandler);
+commands.set("why", googleHandler);
+commands.set("when", googleHandler);
+commands.set("how", googleHandler);
+commands.set("what", googleHandler);
+commands.set("which", googleHandler);
 const memesHandler = new GetMemesHandler();
-commands.set('memes', memesHandler);
+commands.set("memes", memesHandler);
 const gamesHandler = new PlayGamesHandler();
-commands.set('play', gamesHandler);
+commands.set("game", gamesHandler);
 const newsHandler = new GetNewsHandler();
-commands.set('news', newsHandler);
+commands.set("news", newsHandler);
+const musicHandler = new PlayMusicHandler();
+commands.set("play", musicHandler);
+const creatorHandler = new GetCreatorHandler();
+commands.set("your creator", creatorHandler);
+commands.set("your maker", creatorHandler);
+commands.set("made you", creatorHandler);
+const voiceHandler = new ToggleVoiceHandler();
+commands.set("voice on", voiceHandler);
+commands.set("voice off", voiceHandler);
+commands.set("shut up", voiceHandler);
+commands.set("talk to me", voiceHandler);
 
 //State that influences the decisionMaker
 /*
@@ -105,35 +122,52 @@ export function removeHandler() {
 }
 
 let addChatFx: Function;
-function sendAMessage(text: string) {
-  addChatFx({from: 'assistant', text});
-  Tts.speak(text);
+function sendAMessage(
+  text: string,
+  silent: boolean = false,
+  variant: ChatBubbleVariants = "basic text"
+) {
+  try {
+    if (addChatFx) {
+      addChatFx({
+        variant,
+        text,
+        extraData: { from: "assistant" },
+      });
+      if (!silent) {
+        speak(text);
+      }
+    }
+  } catch (error) {
+    console.log("Error in sendAMessage");
+  }
 }
 
 export function setCoreFx(_addChatFx: Function, _toggleSpeakFx: Function) {
   addChatFx = _addChatFx;
-  commands.forEach(handler =>
+  commands.forEach((handler) =>
     handler.setCoreFunctions(
       _addChatFx,
       _toggleSpeakFx,
       setHandler,
-      removeHandler,
-    ),
+      removeHandler
+    )
   );
 }
 
 export function decisionMaker(spokenText: string) {
   if (
-    spokenText.toLowerCase() == 'start over' ||
-    spokenText.toLowerCase() == 'reset'
+    spokenText.toLowerCase() == "start over" ||
+    spokenText.toLowerCase() == "reset"
   ) {
     removeHandler();
+    sendAMessage("ok");
     return;
   }
   try {
     if (handlerState.handlerPicked == false) {
       const handlerID = keyphrases.find((phrase: string) =>
-        spokenText.toLowerCase().includes(phrase),
+        spokenText.toLowerCase().includes(phrase)
       );
       console.log(`Handler is ${handlerID}`);
       if (handlerID) {
@@ -153,8 +187,8 @@ export function decisionMaker(spokenText: string) {
       return handler.handleInput(spokenText.toLowerCase());
     }
   } catch (error) {
-    sendAMessage('Sorry, an error occured');
-    console.log('Error in decisionMaker');
+    sendAMessage("Sorry, an error occured");
+    console.log("Error in decisionMaker");
     removeHandler();
   }
 }

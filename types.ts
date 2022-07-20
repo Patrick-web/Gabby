@@ -3,14 +3,14 @@ export interface PromptTutorialType {
   example: string;
 }
 
-export type TabsType = 'tutorial' | 'commands' | 'home';
+export type TabsType = "tutorial" | "commands" | "home";
 
 export type TimeOfDayType =
-  | 'Morning'
-  | 'Night'
-  | 'Evening'
-  | 'Afternoon'
-  | 'Unknown';
+  | "Morning"
+  | "Night"
+  | "Evening"
+  | "Afternoon"
+  | "Unknown";
 
 export interface HandlerStateType {
   handlerPicked: boolean;
@@ -35,7 +35,7 @@ export interface JokeType {
   punchline: string;
   type: string;
   likes: any[];
-  author: {name: string; id?: any};
+  author: { name: string; id?: any };
   approved: boolean;
   date: number;
   NSFW: boolean;
@@ -53,13 +53,14 @@ export interface QuoteType {
 }
 
 export type ChatBubbleVariants =
-  | 'basic text'
-  | 'weather'
-  | 'google'
-  | 'youtube'
-  | 'games'
-  | 'memes'
-  | 'news';
+  | "basic text"
+  | "weather"
+  | "google"
+  | "youtube"
+  | "games"
+  | "memes"
+  | "news"
+  | "music";
 
 export interface ChatType {
   variant: ChatBubbleVariants;
@@ -68,38 +69,45 @@ export interface ChatType {
 }
 
 export type KeywordsType =
-  | 'hello'
-  | 'hi'
-  | 'hey'
-  | 'morning'
-  | 'open'
-  | 'whatsapp'
-  | 'call'
-  | 'message'
-  | 'text'
-  | 'sms'
-  | 'weather'
-  | 'temperature'
-  | 'email'
-  | 'joke'
-  | 'quote'
-  | 'notifications'
-  | 'launch'
-  | 'brightness'
-  | 'reminder'
-  | 'google'
-  | 'who'
-  | 'why'
-  | 'when'
-  | 'how'
-  | 'what'
-  | 'which'
-  | 'memes'
-  | 'play'
-  | 'game'
-  | 'chess'
-  | 'sudoku'
-  | 'checkers'
-  | 'start over'
-  | 'news'
-  | ' reset';
+  | "hello"
+  | "hi"
+  | "hey"
+  | "morning"
+  | "open"
+  | "whatsapp"
+  | "call"
+  | "message"
+  | "text"
+  | "sms"
+  | "weather"
+  | "temperature"
+  | "email"
+  | "joke"
+  | "quote"
+  | "notifications"
+  | "launch"
+  | "brightness"
+  | "reminder"
+  | "google"
+  | "who"
+  | "why"
+  | "when"
+  | "how"
+  | "what"
+  | "which"
+  | "memes"
+  | "play"
+  | "game"
+  | "made you"
+  | "your maker"
+  | "your creator"
+  | "chess"
+  | "sudoku"
+  | "checkers"
+  | "start over"
+  | "news"
+  | "voice on"
+  | "voice off"
+  | "shut up"
+  | "talk to me"
+  | " reset";

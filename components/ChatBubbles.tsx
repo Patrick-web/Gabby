@@ -182,3 +182,49 @@ export const GamesBubble = () => {
     </View>
   );
 };
+
+export const MusicBubble = ({chat}: {chat: ChatType}) => {
+  const [webviewHeight, setWebviewHeight] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setWebviewHeight(600);
+    }, 1000);
+  }, []);
+
+  return (
+    <View
+      style={{
+        marginVertical: 5,
+        width: '100%',
+        height: 400,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <View
+        style={{
+          height: webviewHeight,
+          borderRadius: 20,
+          width: '100%',
+          overflow: 'scroll',
+          position: 'relative',
+        }}>
+        <WebView
+          source={{
+            uri: chat.extraData.url,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: 50,
+          }}></View>
+      </View>
+    </View>
+  );
+};

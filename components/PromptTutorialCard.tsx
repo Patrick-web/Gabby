@@ -1,31 +1,33 @@
-import React from 'react';
-import {View, Text} from 'react-native';
+import React from "react";
+import { View, Text } from "react-native";
 
-import {PromptTutorialType} from '../types';
+import { PromptTutorialType } from "../types";
 
-const PromptTutorialCard = ({prompt}: {prompt: PromptTutorialType}) => {
+const PromptTutorialCard = ({ prompt }: { prompt: PromptTutorialType }) => {
   return (
     <View
       style={{
         margin: 10,
-        borderColor: '#BC61C2',
+        borderColor: "#BC61C2",
         padding: 10,
-        borderLeftWidth: 2,
+        borderLeftWidth: prompt.title ? 2 : 0,
       }}>
-      <Text style={{color: 'white', fontSize: 20, fontWeight: '900'}}>
+      <Text style={{ color: "white", fontSize: 20, fontWeight: "900" }}>
         {prompt.title}
       </Text>
-      <View style={{flexDirection: 'row'}}>
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 15,
-            fontWeight: '300',
-            marginRight: 5,
-            fontStyle: 'italic',
-          }}>
-          for example: {prompt.example}
-        </Text>
+      <View style={{ flexDirection: "row" }}>
+        {prompt.example && (
+          <Text
+            style={{
+              color: "white",
+              fontSize: 15,
+              fontWeight: "300",
+              marginRight: 5,
+              fontStyle: "italic",
+            }}>
+            for example: {prompt.example}
+          </Text>
+        )}
       </View>
     </View>
   );

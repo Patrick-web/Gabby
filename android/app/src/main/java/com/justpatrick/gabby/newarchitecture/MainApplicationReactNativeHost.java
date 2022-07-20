@@ -1,4 +1,4 @@
-package com.robo.newarchitecture;
+package com.justpatrick.gabby.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.robo.BuildConfig;
-import com.robo.newarchitecture.components.MainComponentsRegistry;
-import com.robo.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.justpatrick.gabby.BuildConfig;
+import com.justpatrick.gabby.newarchitecture.components.MainComponentsRegistry;
+import com.justpatrick.gabby.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
