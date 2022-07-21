@@ -171,7 +171,8 @@ export function setCoreFx(_addChatFx: Function, _toggleSpeakFx: Function) {
 export function decisionMaker(spokenText: string) {
   if (
     spokenText.toLowerCase() == "start over" ||
-    spokenText.toLowerCase() == "reset"
+    spokenText.toLowerCase() == "reset" ||
+    spokenText.toLowerCase() == "cancel"
   ) {
     removeHandler();
     sendAMessage("ok");
