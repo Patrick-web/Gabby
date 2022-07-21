@@ -3,7 +3,12 @@ import { actions } from "../stores/staticStore";
 
 export function speak(text: string) {
   if (actions.useVoiceReply()) {
-    Tts.speak(text);
+    try {
+      Tts.speak(text);
+    } catch (error) {
+      console.log("Error speaking");
+      console.log(error);
+    }
   }
 }
 

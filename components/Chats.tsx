@@ -26,7 +26,7 @@ const Chats = ({ partialSpeechResults }: { partialSpeechResults: string }) => {
         height: 300,
         paddingHorizontal: 10,
         paddingBottom: 40,
-        marginTop: isListening ? (chats.length > 1 ? 250 : 230) : 0,
+        marginTop: isListening ? (chats.length > 1 ? 250 : 100) : 0,
         marginBottom: 140,
       }}>
       {chats.map((chat: ChatType, index: number) => {

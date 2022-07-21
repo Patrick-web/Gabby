@@ -95,7 +95,7 @@ const App = () => {
     });
     await sleep(3000);
     addChat({
-      text: "Also, might want to lower your volume as I reply by voice",
+      text: "Also, you might want to lower your volume as I reply by voice 🎤",
       variant: "basic text",
       extraData: {},
     });
@@ -105,20 +105,20 @@ const App = () => {
     async function intialize() {
       await initStore();
       SplashScreen.hide();
+      AsyncStorage.getItem("firstLaunch").then((value) => {
+        if (!value) {
+          onboard();
+          AsyncStorage.setItem("firstLaunch", "yes");
+        } else {
+          addChat({
+            text: "How can I help",
+            variant: "basic text",
+            extraData: {},
+          });
+        }
+      });
     }
     intialize();
-    AsyncStorage.getItem("firstLaunch").then((value) => {
-      if (!value) {
-        onboard();
-        AsyncStorage.setItem("firstLaunch", "yes");
-      } else {
-        addChat({
-          text: "How can I help",
-          variant: "basic text",
-          extraData: {},
-        });
-      }
-    });
   }, []);
 
   return (
