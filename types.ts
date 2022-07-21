@@ -75,6 +75,7 @@ export type KeywordsType =
   | "morning"
   | "open"
   | "whatsapp"
+  | "call me "
   | "call"
   | "message"
   | "text"
@@ -110,4 +111,7 @@ export type KeywordsType =
   | "voice off"
   | "shut up"
   | "talk to me"
+  | "hello"
+  | "hey"
+  | "hi"
   | " reset";

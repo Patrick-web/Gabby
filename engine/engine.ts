@@ -6,20 +6,24 @@ import {
   GetNewsHandler,
   GiveQuoteHandler,
   GoogleItHandler,
+  GreetingHandler,
   MakeCallHandler,
   PlayGamesHandler,
   PlayMusicHandler,
   SendEmailHandeler,
   SendMessageHandler,
   SendWhatsappMessageHandler,
+  SetNicknameHandler,
   TellJokeHandler,
   ToggleVoiceHandler,
 } from "./Handlers";
 import { speak } from "./utils";
 
+//This order is important
 const keyphrases: KeywordsType[] = [
   "open",
   "whatsapp",
+  "call me ",
   "call",
   "message",
   "text",
@@ -47,6 +51,9 @@ const keyphrases: KeywordsType[] = [
   "which",
   "news",
   "morning",
+  "hello",
+  "hi",
+  "hey",
 ];
 
 const commands = new Map<KeywordsType, any>();
@@ -93,6 +100,12 @@ commands.set("voice on", voiceHandler);
 commands.set("voice off", voiceHandler);
 commands.set("shut up", voiceHandler);
 commands.set("talk to me", voiceHandler);
+const greetHandler = new GreetingHandler();
+commands.set("hello", greetHandler);
+commands.set("hey", greetHandler);
+commands.set("hi", greetHandler);
+const nicknameHandler = new SetNicknameHandler();
+commands.set("call me ", nicknameHandler);
 
 //State that influences the decisionMaker
 /*

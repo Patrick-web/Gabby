@@ -29,6 +29,11 @@ export const CommandsTab = ({
       example: "Whatsapp Jilian or Send whatsapp message",
     },
     {
+      title: "Play a song",
+      example:
+        "Play some jazz or Play hillsong or Play i'll catch your grenade",
+    },
+    {
       title: "Open an App",
       example: "Open YouTube",
     },

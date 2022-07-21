@@ -5,6 +5,7 @@ import { sendDirectSms } from "../plugins/RNDirectSendSms/index";
 import { Linking } from "react-native";
 import { ChatBubbleVariants, ChatType, JokeType, QuoteType } from "../types";
 import { sleep, speak } from "./utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class BaseHandler {
   handlerID: string = "";
@@ -54,6 +55,56 @@ class BaseHandler {
     if (this.toggleSpeakFx) {
       this.toggleSpeakFx(true);
     }
+  }
+}
+
+export class GreetingHandler extends BaseHandler {
+  nextHandler: "" | "setNickname" = "";
+  handlerID = "hello";
+  handleInput(text: string) {
+    this.setHandler(this.handlerID);
+    if (this.nextHandler == "setNickname") {
+      this.setNickname(text);
+      return;
+    }
+    AsyncStorage.getItem("nickname").then((value) => {
+      if (value) {
+        this.sendAMessage(`Hello ${value}. How may I assist you?`);
+      } else {
+        this.promptNickname();
+      }
+    });
+  }
+  async promptNickname() {
+    this.nextHandler = "setNickname";
+    this.sendAMessage("Hey you, how may I...");
+    await sleep(2000);
+    this.sendAMessage("I just realized I dont know your name");
+    await sleep(2000);
+    this.sendAMessage("Let's stop right there. What should I call you");
+    await sleep(3000);
+    this.enableMic();
+  }
+  async setNickname(text: string) {
+    console.log("Setting user name");
+    this.removeHandler();
+    await AsyncStorage.setItem("nickname", text);
+    this.sendAMessage(`Great, from now on I'll call you ${text}`);
+    await sleep(2500);
+    this.sendAMessage(
+      "If you want to change this just say 'call me <insert your nickname>'"
+    );
+  }
+  cleanUp() {
+    this.nextHandler = "";
+  }
+}
+
+export class SetNicknameHandler extends BaseHandler {
+  async handleInput(text: string) {
+    const nickname = text.replace(/call me/i, "").trim();
+    await AsyncStorage.setItem("nickname", nickname);
+    this.sendAMessage(`Great, from now on I'll call you ${nickname}`);
   }
 }
 
