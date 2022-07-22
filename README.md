@@ -1,7 +1,11 @@
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/56973177/180441767-7cc7735b-d233-409d-993e-5b4b967ca5fb.png" width="128" height="128" style="display: block; margin: 0 auto"/>
+    <h1>Gabby</h1>
+    <p>A voice assistant built with React Native</p>
 
-# Gabby Voice Assistant
+[![Downloads](https://img.shields.io/badge/-React%20Native-3a83f9?style=for-the-badge&logo=react&logoColor=white&labelColor=2ec781)](https://reactnative.dev)
+</div>
 
-A voice assistant built with React Native
 
 ## Features
 
