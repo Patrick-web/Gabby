@@ -53,10 +53,10 @@ export async function initStore() {
 
 async function getApps() {
   try {
-    let apps = await AsyncStorage.getItem("apps");
+    let apps: any = await AsyncStorage.getItem("apps");
     if (apps) {
-      apps = JSON.parse(apps);
-      console.log(apps?.length);
+      apps = JSON.parse(apps) as AppType;
+      state.apps = apps;
       console.log("Apps from async storage");
       return;
     } else {
@@ -68,7 +68,7 @@ async function getApps() {
   }
   async function initApps() {
     try {
-      const apps = await RNInstalledApplication.getNonSystemApps();
+      const apps = await RNInstalledApplication.getApps();
       state.apps = apps;
       await AsyncStorage.setItem("apps", JSON.stringify(apps));
       console.log("Apps saved");
@@ -119,7 +119,7 @@ async function requestPhoneCallPermission() {
 async function getContacts() {
   try {
     let contacts = await AsyncStorage.getItem("contacts");
-    if (contacts && false) {
+    if (contacts) {
       contacts = JSON.parse(contacts);
       console.log("Contacts from async storage");
       return;

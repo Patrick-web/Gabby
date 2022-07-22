@@ -75,7 +75,7 @@ export const CommandsTab = ({
     },
     {
       title: "You want to hear my voice",
-      example: "Voice on",
+      example: "Voice on or talk to me",
     },
     {
       title: "Exit a command that is in progress",
