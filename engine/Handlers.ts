@@ -237,7 +237,7 @@ export class MakeCallHandler extends BaseHandler {
       return;
     }
     this.removeHandler();
-    this.sendAMessage('Ok');
+    // this.sendAMessage('Ok');
     SendIntentAndroid.sendPhoneCall(
       this.selectedContact.phoneNumbers[0].number,
       true,
@@ -433,7 +433,8 @@ export class SendMessageHandler extends BaseHandler {
     if (!this.selectedContact?.phoneNumbers) return;
     const message = this.spokenMessge;
     const contactNumber = this.selectedContact.phoneNumbers[0].number;
-    sendDirectSms(contactNumber, message);
+    SendIntentAndroid.sendSms(contactNumber, message);
+    // sendDirectSms(contactNumber, message);
     this.sendAMessage('Message Sent');
   }
   cleanUp() {
