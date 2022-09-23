@@ -1,14 +1,14 @@
-import { actions } from "../stores/staticStore";
-import { Contact } from "react-native-contacts";
-import SendIntentAndroid from "react-native-send-intent";
-import { sendDirectSms } from "../plugins/RNDirectSendSms/index";
-import { Linking } from "react-native";
-import { ChatBubbleVariants, ChatType, JokeType, QuoteType } from "../types";
-import { sleep, speak } from "./utils";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {actions} from '../stores/staticStore';
+import {Contact} from 'react-native-contacts';
+import SendIntentAndroid from 'react-native-send-intent';
+import {sendDirectSms} from '../plugins/RNDirectSendSms/index';
+import {Linking} from 'react-native';
+import {ChatBubbleVariants, ChatType, JokeType, QuoteType} from '../types';
+import {sleep, speak} from './utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class BaseHandler {
-  handlerID: string = "";
+  handlerID: string = '';
   flows = false; //If the resolver has conversation steps
   flowLevel = 0; // Current step in the conversation flow
   inFlow = false; // If a conversation flow is in progress
@@ -24,7 +24,7 @@ class BaseHandler {
     _addChatFx: (chat: ChatType) => void,
     _toggleSpeakFx: Function,
     _setHandler: Function,
-    _removeHandler: Function
+    _removeHandler: Function,
   ) {
     this.addChatFx = _addChatFx;
     this.toggleSpeakFx = _toggleSpeakFx;
@@ -34,21 +34,21 @@ class BaseHandler {
   sendAMessage(
     text: string,
     silent: boolean = false,
-    variant: ChatBubbleVariants = "basic text"
+    variant: ChatBubbleVariants = 'basic text',
   ) {
     try {
       if (this.addChatFx) {
         this.addChatFx({
           variant,
           text,
-          extraData: { from: "assistant" },
+          extraData: {from: 'assistant'},
         });
         if (!silent) {
           speak(text);
         }
       }
     } catch (error) {
-      console.log("Error in sendAMessage");
+      console.log('Error in sendAMessage');
     }
   }
   enableMic() {
@@ -59,15 +59,15 @@ class BaseHandler {
 }
 
 export class GreetingHandler extends BaseHandler {
-  nextHandler: "" | "setNickname" = "";
-  handlerID = "hello";
+  nextHandler: '' | 'setNickname' = '';
+  handlerID = 'hello';
   handleInput(text: string) {
     this.setHandler(this.handlerID);
-    if (this.nextHandler == "setNickname") {
+    if (this.nextHandler == 'setNickname') {
       this.setNickname(text);
       return;
     }
-    AsyncStorage.getItem("nickname").then((value) => {
+    AsyncStorage.getItem('nickname').then(value => {
       if (value) {
         this.sendAMessage(`Hello ${value}. How may I assist you?`);
       } else {
@@ -76,45 +76,45 @@ export class GreetingHandler extends BaseHandler {
     });
   }
   async promptNickname() {
-    this.nextHandler = "setNickname";
-    this.sendAMessage("Hey you, how may I...");
+    this.nextHandler = 'setNickname';
+    this.sendAMessage('Hey you, how may I...');
     await sleep(2000);
-    this.sendAMessage("I just realized I dont know your name");
+    this.sendAMessage('I just realized I dont know your name');
     await sleep(2000);
     this.sendAMessage("Let's stop right there. What should I call you");
     await sleep(3000);
     this.enableMic();
   }
   async setNickname(text: string) {
-    console.log("Setting user name");
+    console.log('Setting user name');
     this.removeHandler();
-    await AsyncStorage.setItem("nickname", text);
+    await AsyncStorage.setItem('nickname', text);
     this.sendAMessage(`Great, from now on I'll call you ${text}`);
     await sleep(2500);
     this.sendAMessage(
-      "If you want to change this just say 'call me <insert your nickname>'"
+      "If you want to change this just say 'call me <insert your nickname>'",
     );
   }
   cleanUp() {
-    this.nextHandler = "";
+    this.nextHandler = '';
   }
 }
 
 export class SetNicknameHandler extends BaseHandler {
   async handleInput(text: string) {
-    const nickname = text.replace(/call me/i, "").trim();
-    await AsyncStorage.setItem("nickname", nickname);
+    const nickname = text.replace(/call me/i, '').trim();
+    await AsyncStorage.setItem('nickname', nickname);
     this.sendAMessage(`Great, from now on I'll call you ${nickname}`);
   }
 }
 
 export class MakeCallHandler extends BaseHandler {
-  handlerID = "call";
+  handlerID = 'call';
   flows = true;
   nextHandler:
-    | "checkContactProvidedInPrompt"
-    | "getTargetContact"
-    | "handleSelectedPossibleContact" = "checkContactProvidedInPrompt";
+    | 'checkContactProvidedInPrompt'
+    | 'getTargetContact'
+    | 'handleSelectedPossibleContact' = 'checkContactProvidedInPrompt';
   possibleContacts: Contact[] = [];
   userContactName: null | string = null;
   promptedForContact = false;
@@ -123,39 +123,39 @@ export class MakeCallHandler extends BaseHandler {
   handleInput(text: string) {
     this.setHandler(this.handlerID);
     console.log(`nextHandler: ${this.nextHandler}`);
-    if (this.nextHandler == "checkContactProvidedInPrompt") {
+    if (this.nextHandler == 'checkContactProvidedInPrompt') {
       this.checkContactProvidedInPrompt(text);
       return;
     }
-    if (this.nextHandler == "getTargetContact") {
+    if (this.nextHandler == 'getTargetContact') {
       this.getTargetContact(text);
       return;
     }
-    if (this.nextHandler == "handleSelectedPossibleContact") {
+    if (this.nextHandler == 'handleSelectedPossibleContact') {
       this.handleSelectedPossibleContact(text);
       return;
     }
   }
   checkContactProvidedInPrompt(text: string) {
-    console.log("checkContactProvidedInPrompt");
+    console.log('checkContactProvidedInPrompt');
     /*
         Checks whether the user has provided a contactName in their prompt.
         If they provided a contactName, it calls flow1. 
         If the user did not provide a contactName, it returns a prompt for the contactName
       */
-    this.userContactName = text.replace(/.*call/, "").trim() || null;
+    this.userContactName = text.replace(/.*call/, '').trim() || null;
     if (this.userContactName) {
       this.getTargetContact();
     } else {
-      this.nextHandler = "getTargetContact";
-      this.sendAMessage("Who do you want to call ?");
+      this.nextHandler = 'getTargetContact';
+      this.sendAMessage('Who do you want to call ?');
       setTimeout(() => {
         this.enableMic();
       }, 2100);
     }
   }
   getTargetContact(contactName?: string) {
-    console.log("getTargetContact");
+    console.log('getTargetContact');
     /*
         Receives a contactName and gets all possibleContacts.
           If only one possible contact was found it send that contact to the makeCall function
@@ -166,7 +166,7 @@ export class MakeCallHandler extends BaseHandler {
     }
     console.log(this.userContactName);
     this.possibleContacts = actions.getPossibleContacts(
-      this.userContactName as string
+      this.userContactName as string,
     );
     if (this.possibleContacts.length == 0) {
       this.sendAMessage("Sorry, I'm not finding a match in your contacts.");
@@ -179,11 +179,11 @@ export class MakeCallHandler extends BaseHandler {
     }
   }
   promptToSelectPossibleContact() {
-    console.log("promptToSelectPossibleContact");
-    this.nextHandler = "handleSelectedPossibleContact";
+    console.log('promptToSelectPossibleContact');
+    this.nextHandler = 'handleSelectedPossibleContact';
     const contactNames = this.possibleContacts
       .map((contact: Contact) => contact.displayName)
-      .join(", ");
+      .join(', ');
     this.sendAMessage(`Which of the following should I call: ${contactNames}`);
     setTimeout(() => {
       this.enableMic();
@@ -191,17 +191,17 @@ export class MakeCallHandler extends BaseHandler {
   }
 
   handleSelectedPossibleContact(text: string) {
-    console.log("handleSelectedPossibleContact");
+    console.log('handleSelectedPossibleContact');
     const pickedPossibleContactIndex =
-      text.includes("first") || text.includes("number one")
+      text.includes('first') || text.includes('number one')
         ? 0
-        : text.includes("second") || text.includes("number two")
+        : text.includes('second') || text.includes('number two')
         ? 1
-        : text.includes("third") || text.includes("number three")
+        : text.includes('third') || text.includes('number three')
         ? 2
-        : text.includes("fourth") ||
-          text.includes("four") ||
-          text.includes("last")
+        : text.includes('fourth') ||
+          text.includes('four') ||
+          text.includes('last')
         ? 3
         : 4;
     const selectedContact = this.possibleContacts[pickedPossibleContactIndex];
@@ -213,7 +213,7 @@ export class MakeCallHandler extends BaseHandler {
       }, 1500);
     } else {
       const pickedPossibleContactIndex = this.possibleContacts.findIndex(
-        (contact) => contact.displayName == text
+        contact => contact.displayName == text,
       );
       if (pickedPossibleContactIndex) {
         const selectedContact =
@@ -230,69 +230,69 @@ export class MakeCallHandler extends BaseHandler {
     }
   }
   makeCall() {
-    console.log("makeCall");
+    console.log('makeCall');
     this.removeHandler();
     if (!this.selectedContact?.phoneNumbers) {
-      this.sendAMessage("Sorry an error occured");
+      this.sendAMessage('Sorry an error occured');
       return;
     }
     this.removeHandler();
-    this.sendAMessage("Ok");
+    this.sendAMessage('Ok');
     SendIntentAndroid.sendPhoneCall(
       this.selectedContact.phoneNumbers[0].number,
-      true
+      true,
     );
   }
   cleanUp() {
-    this.nextHandler = "checkContactProvidedInPrompt";
+    this.nextHandler = 'checkContactProvidedInPrompt';
   }
 }
 
 export class SendMessageHandler extends BaseHandler {
-  handlerID = "message";
+  handlerID = 'message';
   flows = true;
   nextHandler:
-    | "checkContactProvidedInPrompt"
-    | "getTargetContact"
-    | "handleSelectedPossibleContact"
-    | "getMessageToSend"
-    | "handleSpokenMessage"
-    | "confirmSending"
-    | "handleConfirmSendingResponse" = "checkContactProvidedInPrompt";
+    | 'checkContactProvidedInPrompt'
+    | 'getTargetContact'
+    | 'handleSelectedPossibleContact'
+    | 'getMessageToSend'
+    | 'handleSpokenMessage'
+    | 'confirmSending'
+    | 'handleConfirmSendingResponse' = 'checkContactProvidedInPrompt';
   possibleContacts: Contact[] = [];
   userContactName: null | string = null;
   promptedForContact = false;
   selectedContact: Contact | null = null;
-  spokenMessge: string = "";
+  spokenMessge: string = '';
 
   handleInput(text: string) {
     console.log(`Received Input: ${text}\n flow level: ${this.flowLevel}`);
     this.setHandler(this.handlerID);
-    if (this.nextHandler == "checkContactProvidedInPrompt") {
+    if (this.nextHandler == 'checkContactProvidedInPrompt') {
       this.checkContactProvidedInPrompt(text);
       return;
     }
-    if (this.nextHandler == "getTargetContact") {
+    if (this.nextHandler == 'getTargetContact') {
       this.getTargetContact(text);
       return;
     }
-    if (this.nextHandler == "handleSelectedPossibleContact") {
+    if (this.nextHandler == 'handleSelectedPossibleContact') {
       this.handleSelectedPossibleContact(text);
       return;
     }
-    if (this.nextHandler == "getMessageToSend") {
+    if (this.nextHandler == 'getMessageToSend') {
       this.promptForMessageToSend();
       return;
     }
-    if (this.nextHandler == "handleSpokenMessage") {
+    if (this.nextHandler == 'handleSpokenMessage') {
       this.handleSpokenMessage(text);
       return;
     }
-    if (this.nextHandler == "confirmSending") {
+    if (this.nextHandler == 'confirmSending') {
       this.confirmSending();
       return;
     }
-    if (this.nextHandler == "handleConfirmSendingResponse") {
+    if (this.nextHandler == 'handleConfirmSendingResponse') {
       this.handleConfirmSendingResponse(text);
       return;
     }
@@ -308,17 +308,17 @@ export class SendMessageHandler extends BaseHandler {
       */
     this.userContactName =
       text
-        .replace(/.*message/i, "")
-        .replace(/.*sms/i, "")
-        .replace(/.*text/i, "")
-        .replace(/.*to/i, "")
+        .replace(/.*message/i, '')
+        .replace(/.*sms/i, '')
+        .replace(/.*text/i, '')
+        .replace(/.*to/i, '')
         .trim() || null;
     console.log(`userContactName is: ${this.userContactName}`);
     if (this.userContactName) {
       this.getTargetContact();
     } else {
-      this.nextHandler = "getTargetContact";
-      this.sendAMessage("Who do you want to send a message to?");
+      this.nextHandler = 'getTargetContact';
+      this.sendAMessage('Who do you want to send a message to?');
       setTimeout(() => {
         this.enableMic();
       }, 2100);
@@ -336,7 +336,7 @@ export class SendMessageHandler extends BaseHandler {
     }
     console.log(this.userContactName);
     this.possibleContacts = actions.getPossibleContacts(
-      this.userContactName as string
+      this.userContactName as string,
     );
     if (this.possibleContacts.length == 0) {
       this.sendAMessage("Sorry, I'm not finding a match in your contacts.");
@@ -349,12 +349,12 @@ export class SendMessageHandler extends BaseHandler {
     }
   }
   promptToSelectPossibleContact() {
-    this.nextHandler = "handleSelectedPossibleContact";
+    this.nextHandler = 'handleSelectedPossibleContact';
     const contactNames = this.possibleContacts
       .map((contact: Contact) => contact.displayName)
-      .join(", ");
+      .join(', ');
     this.sendAMessage(
-      `Whom of the following should I message? ${contactNames}`
+      `Whom of the following should I message? ${contactNames}`,
     );
     setTimeout(() => {
       this.enableMic();
@@ -362,13 +362,13 @@ export class SendMessageHandler extends BaseHandler {
   }
   handleSelectedPossibleContact(text: any) {
     const pickedPossibleContactIndex =
-      text.includes("first") || text.includes("one")
+      text.includes('first') || text.includes('one')
         ? 0
-        : text.includes("second") || text.includes("two")
+        : text.includes('second') || text.includes('two')
         ? 1
-        : text.includes("third") || text.includes("three")
+        : text.includes('third') || text.includes('three')
         ? 2
-        : text.includes("fourth") || text.includes("last")
+        : text.includes('fourth') || text.includes('last')
         ? 3
         : 4;
     const selectedContact = this.possibleContacts[pickedPossibleContactIndex];
@@ -377,7 +377,7 @@ export class SendMessageHandler extends BaseHandler {
       this.promptForMessageToSend();
     } else {
       const pickedPossibleContactIndex = this.possibleContacts.findIndex(
-        (contact) => contact.displayName == text
+        contact => contact.displayName == text,
       );
       if (pickedPossibleContactIndex) {
         const selectedContact =
@@ -391,9 +391,9 @@ export class SendMessageHandler extends BaseHandler {
     }
   }
   promptForMessageToSend() {
-    this.nextHandler = "handleSpokenMessage";
+    this.nextHandler = 'handleSpokenMessage';
     this.sendAMessage(
-      `You picked ${this.selectedContact?.displayName}. What's the message?`
+      `You picked ${this.selectedContact?.displayName}. What's the message?`,
     );
     setTimeout(() => {
       this.enableMic();
@@ -406,26 +406,26 @@ export class SendMessageHandler extends BaseHandler {
     }
   }
   confirmSending() {
-    this.nextHandler = "handleConfirmSendingResponse";
-    this.sendAMessage("Got it. Ready to send it?");
+    this.nextHandler = 'handleConfirmSendingResponse';
+    this.sendAMessage('Got it. Ready to send it?');
     setTimeout(() => {
       this.enableMic();
     }, 2500);
   }
   handleConfirmSendingResponse(text: string) {
     const proceed =
-      text.includes("yes") ||
-      text.includes("sure") ||
-      text.includes("yeah") ||
-      text.includes("ok")
+      text.includes('yes') ||
+      text.includes('sure') ||
+      text.includes('yeah') ||
+      text.includes('ok')
         ? true
         : false;
     this.removeHandler();
     if (proceed) {
       this.sendMessage();
     } else {
-      this.nextHandler = "checkContactProvidedInPrompt";
-      this.sendAMessage("Message sending canceled");
+      this.nextHandler = 'checkContactProvidedInPrompt';
+      this.sendAMessage('Message sending canceled');
     }
   }
   sendMessage() {
@@ -434,58 +434,58 @@ export class SendMessageHandler extends BaseHandler {
     const message = this.spokenMessge;
     const contactNumber = this.selectedContact.phoneNumbers[0].number;
     sendDirectSms(contactNumber, message);
-    this.sendAMessage("Message Sent");
+    this.sendAMessage('Message Sent');
   }
   cleanUp() {
-    this.nextHandler = "checkContactProvidedInPrompt";
+    this.nextHandler = 'checkContactProvidedInPrompt';
   }
 }
 
 export class SendWhatsappMessageHandler extends BaseHandler {
-  handlerID = "whatsapp";
+  handlerID = 'whatsapp';
   flows = true;
   nextHandler:
-    | "checkContactProvidedInPrompt"
-    | "getTargetContact"
-    | "handleSelectedPossibleContact"
-    | "getMessageToSend"
-    | "handleSpokenMessage"
-    | "confirmSending"
-    | "handleConfirmSendingResponse" = "checkContactProvidedInPrompt";
+    | 'checkContactProvidedInPrompt'
+    | 'getTargetContact'
+    | 'handleSelectedPossibleContact'
+    | 'getMessageToSend'
+    | 'handleSpokenMessage'
+    | 'confirmSending'
+    | 'handleConfirmSendingResponse' = 'checkContactProvidedInPrompt';
   possibleContacts: Contact[] = [];
   userContactName: null | string = null;
   promptedForContact = false;
   selectedContact: Contact | null = null;
-  spokenMessge: string = "";
+  spokenMessge: string = '';
 
   handleInput(text: string) {
     console.log(`Received Input: ${text}\n flow level: ${this.flowLevel}`);
     this.setHandler(this.handlerID);
-    if (this.nextHandler == "checkContactProvidedInPrompt") {
+    if (this.nextHandler == 'checkContactProvidedInPrompt') {
       this.checkContactProvidedInPrompt(text);
       return;
     }
-    if (this.nextHandler == "getTargetContact") {
+    if (this.nextHandler == 'getTargetContact') {
       this.getTargetContact(text);
       return;
     }
-    if (this.nextHandler == "handleSelectedPossibleContact") {
+    if (this.nextHandler == 'handleSelectedPossibleContact') {
       this.handleSelectedPossibleContact(text);
       return;
     }
-    if (this.nextHandler == "getMessageToSend") {
+    if (this.nextHandler == 'getMessageToSend') {
       this.promptForMessageToSend();
       return;
     }
-    if (this.nextHandler == "handleSpokenMessage") {
+    if (this.nextHandler == 'handleSpokenMessage') {
       this.handleSpokenMessage(text);
       return;
     }
-    if (this.nextHandler == "confirmSending") {
+    if (this.nextHandler == 'confirmSending') {
       this.confirmSending();
       return;
     }
-    if (this.nextHandler == "handleConfirmSendingResponse") {
+    if (this.nextHandler == 'handleConfirmSendingResponse') {
       this.handleConfirmSendingResponse(text);
       return;
     }
@@ -501,18 +501,18 @@ export class SendWhatsappMessageHandler extends BaseHandler {
       */
     this.userContactName =
       text
-        .replace(/.*message/i, "")
-        .replace(/.*sms/i, "")
-        .replace(/.*text/i, "")
-        .replace(/.*to/i, "")
-        .replace(/.*whatsapp/i, "")
+        .replace(/.*message/i, '')
+        .replace(/.*sms/i, '')
+        .replace(/.*text/i, '')
+        .replace(/.*to/i, '')
+        .replace(/.*whatsapp/i, '')
         .trim() || null;
     console.log(`userContactName is: ${this.userContactName}`);
     if (this.userContactName) {
       this.getTargetContact();
     } else {
-      this.nextHandler = "getTargetContact";
-      this.sendAMessage("Who do you want to whatsapp?");
+      this.nextHandler = 'getTargetContact';
+      this.sendAMessage('Who do you want to whatsapp?');
       setTimeout(() => {
         this.enableMic();
       }, 2100);
@@ -529,7 +529,7 @@ export class SendWhatsappMessageHandler extends BaseHandler {
     }
     console.log(this.userContactName);
     this.possibleContacts = actions.getPossibleContacts(
-      this.userContactName as string
+      this.userContactName as string,
     );
     if (this.possibleContacts.length == 0) {
       this.sendAMessage("Sorry, I'm not finding a match in your contacts.");
@@ -542,12 +542,12 @@ export class SendWhatsappMessageHandler extends BaseHandler {
     }
   }
   promptToSelectPossibleContact() {
-    this.nextHandler = "handleSelectedPossibleContact";
+    this.nextHandler = 'handleSelectedPossibleContact';
     const contactNames = this.possibleContacts
       .map((contact: Contact) => contact.displayName)
-      .join(", ");
+      .join(', ');
     this.sendAMessage(
-      `Whom of the following should I whatsapp? ${contactNames}`
+      `Whom of the following should I whatsapp? ${contactNames}`,
     );
     setTimeout(() => {
       this.enableMic();
@@ -555,13 +555,13 @@ export class SendWhatsappMessageHandler extends BaseHandler {
   }
   handleSelectedPossibleContact(text: any) {
     const pickedPossibleContactIndex =
-      text.includes("first") || text.includes("one")
+      text.includes('first') || text.includes('one')
         ? 0
-        : text.includes("second") || text.includes("two")
+        : text.includes('second') || text.includes('two')
         ? 1
-        : text.includes("third") || text.includes("three")
+        : text.includes('third') || text.includes('three')
         ? 2
-        : text.includes("fourth") || text.includes("last")
+        : text.includes('fourth') || text.includes('last')
         ? 3
         : 4;
     const selectedContact = this.possibleContacts[pickedPossibleContactIndex];
@@ -570,7 +570,7 @@ export class SendWhatsappMessageHandler extends BaseHandler {
       this.promptForMessageToSend();
     } else {
       const pickedPossibleContactIndex = this.possibleContacts.findIndex(
-        (contact) => contact.displayName == text
+        contact => contact.displayName == text,
       );
       if (pickedPossibleContactIndex) {
         const selectedContact =
@@ -584,9 +584,9 @@ export class SendWhatsappMessageHandler extends BaseHandler {
     }
   }
   promptForMessageToSend() {
-    this.nextHandler = "handleSpokenMessage";
+    this.nextHandler = 'handleSpokenMessage';
     this.sendAMessage(
-      `You picked ${this.selectedContact?.displayName}. What's the message?`
+      `You picked ${this.selectedContact?.displayName}. What's the message?`,
     );
     setTimeout(() => {
       this.enableMic();
@@ -599,26 +599,26 @@ export class SendWhatsappMessageHandler extends BaseHandler {
     }
   }
   confirmSending() {
-    this.nextHandler = "handleConfirmSendingResponse";
-    this.sendAMessage("Got it. Ready to send it?");
+    this.nextHandler = 'handleConfirmSendingResponse';
+    this.sendAMessage('Got it. Ready to send it?');
     setTimeout(() => {
       this.enableMic();
     }, 2500);
   }
   handleConfirmSendingResponse(text: string) {
     const proceed =
-      text.includes("yes") ||
-      text.includes("sure") ||
-      text.includes("yeah") ||
-      text.includes("ok")
+      text.includes('yes') ||
+      text.includes('sure') ||
+      text.includes('yeah') ||
+      text.includes('ok')
         ? true
         : false;
     this.removeHandler();
     if (proceed) {
       this.sendMessage();
     } else {
-      this.nextHandler = "checkContactProvidedInPrompt";
-      this.sendAMessage("Message sending canceled");
+      this.nextHandler = 'checkContactProvidedInPrompt';
+      this.sendAMessage('Message sending canceled');
     }
   }
   sendMessage() {
@@ -626,103 +626,103 @@ export class SendWhatsappMessageHandler extends BaseHandler {
     if (!this.selectedContact?.phoneNumbers) return;
     const message = encodeURI(this.spokenMessge);
     const contactNumber = this.selectedContact.phoneNumbers[0].number;
-    this.sendAMessage("Done");
+    this.sendAMessage('Done');
     Linking.openURL(`https://wa.me/+254${contactNumber}?text=${message}`);
   }
   cleanUp() {
-    this.nextHandler = "checkContactProvidedInPrompt";
+    this.nextHandler = 'checkContactProvidedInPrompt';
   }
 }
 
 export class AppOpenerHandler extends BaseHandler {
   handleInput(text: string) {
     const apps = actions.getApps();
-    const appName = text.replace("open", "").trim().toLowerCase();
-    const targetApp = apps.find((app) => app.appName.toLowerCase() == appName);
+    const appName = text.replace('open', '').trim().toLowerCase();
+    const targetApp = apps.find(app => app.appName.toLowerCase() == appName);
     if (targetApp) {
-      SendIntentAndroid.openApp(targetApp.packageName, {}).then((wasOpened) => {
+      SendIntentAndroid.openApp(targetApp.packageName, {}).then(wasOpened => {
         if (wasOpened) {
           this.sendAMessage(`Opened ${targetApp.appName}`);
         } else {
-          this.sendAMessage("Sorry, an error occured");
+          this.sendAMessage('Sorry, an error occured');
         }
       });
     } else {
-      this.sendAMessage("No app found with that name");
+      this.sendAMessage('No app found with that name');
     }
   }
 }
 
 export class SendEmailHandeler extends BaseHandler {
-  handlerID: string = "email";
+  handlerID: string = 'email';
   nextHandler:
-    | "checkRecipientProvidedInPrompt"
-    | "handleRecipient"
-    | "handleEmailBody"
-    | "handleConfirmationResponse" = "checkRecipientProvidedInPrompt";
-  userEmail: string = "";
-  formatedEmail: string = "";
-  emailBody: string = "";
+    | 'checkRecipientProvidedInPrompt'
+    | 'handleRecipient'
+    | 'handleEmailBody'
+    | 'handleConfirmationResponse' = 'checkRecipientProvidedInPrompt';
+  userEmail: string = '';
+  formatedEmail: string = '';
+  emailBody: string = '';
 
   handleInput(text: string) {
     this.setHandler(this.handlerID);
 
-    if (this.nextHandler == "checkRecipientProvidedInPrompt") {
+    if (this.nextHandler == 'checkRecipientProvidedInPrompt') {
       this.checkRecipientProvidedInPrompt(text);
       return;
     }
-    if (this.nextHandler == "handleRecipient") {
+    if (this.nextHandler == 'handleRecipient') {
       this.handleRecipient(text);
       return;
     }
-    if (this.nextHandler == "handleEmailBody") {
+    if (this.nextHandler == 'handleEmailBody') {
       this.handleEmailBody(text);
       return;
     }
-    if (this.nextHandler == "handleConfirmationResponse") {
+    if (this.nextHandler == 'handleConfirmationResponse') {
       this.handleConfirmationResponse(text);
       return;
     }
   }
   checkRecipientProvidedInPrompt(text: string) {
-    this.userEmail = text.replace(/.*to/i, "").trim() || "";
-    if (this.userEmail && this.userEmail.includes("gmail.com")) {
+    this.userEmail = text.replace(/.*to/i, '').trim() || '';
+    if (this.userEmail && this.userEmail.includes('gmail.com')) {
       this.promptForEmailBody();
     } else {
       this.getEmailRecipient();
     }
   }
   getEmailRecipient() {
-    this.nextHandler = "handleRecipient";
-    this.sendAMessage("Ok, who should I send it to?");
+    this.nextHandler = 'handleRecipient';
+    this.sendAMessage('Ok, who should I send it to?');
     setTimeout(() => {
       this.enableMic();
     }, 2500);
   }
   handleRecipient(text: string) {
     this.userEmail = text;
-    if (this.userEmail.endsWith("gmail.com")) {
+    if (this.userEmail.endsWith('gmail.com')) {
       const formatedEmail = this.userEmail
-        .replace("at gmail", "@gmail")
-        .replace(/ /g, "")
+        .replace('at gmail', '@gmail')
+        .replace(/ /g, '')
         .toLowerCase();
       this.formatedEmail = formatedEmail;
       this.promptForEmailBody();
     } else {
-      this.sendAMessage("That is not a valid email address");
+      this.sendAMessage('That is not a valid email address');
       this.removeHandler();
     }
   }
   promptForEmailBody() {
-    this.nextHandler = "handleEmailBody";
+    this.nextHandler = 'handleEmailBody';
     const formatedEmail = this.userEmail
-      .replace("at gmail", "@gmail")
-      .replace(/ /g, "")
+      .replace('at gmail', '@gmail')
+      .replace(/ /g, '')
       .toLowerCase();
     this.formatedEmail = formatedEmail;
 
     this.sendAMessage(
-      `Ok,recipient is ${this.formatedEmail}. Whats is the email body`
+      `Ok,recipient is ${this.formatedEmail}. Whats is the email body`,
     );
     setTimeout(() => {
       this.enableMic();
@@ -733,42 +733,42 @@ export class SendEmailHandeler extends BaseHandler {
     this.confirmSending();
   }
   confirmSending() {
-    this.nextHandler = "handleConfirmationResponse";
-    this.sendAMessage("Ok, ready to send?");
+    this.nextHandler = 'handleConfirmationResponse';
+    this.sendAMessage('Ok, ready to send?');
     setTimeout(() => {
       this.enableMic();
     }, 2500);
   }
   handleConfirmationResponse(text: string) {
     const proceed =
-      text.includes("yes") ||
-      text.includes("sure") ||
-      text.includes("yeah") ||
-      text.includes("ok")
+      text.includes('yes') ||
+      text.includes('sure') ||
+      text.includes('yeah') ||
+      text.includes('ok')
         ? true
         : false;
     this.removeHandler();
     if (proceed) {
       this.sendEmail();
     } else {
-      this.sendAMessage("Email sending canceled");
+      this.sendAMessage('Email sending canceled');
       this.removeHandler();
     }
   }
   sendEmail() {
     this.removeHandler();
     SendIntentAndroid.sendMail(this.formatedEmail, this.emailBody);
-    this.sendAMessage("Done");
+    this.sendAMessage('Done');
   }
   cleanUp() {
-    this.nextHandler = "checkRecipientProvidedInPrompt";
+    this.nextHandler = 'checkRecipientProvidedInPrompt';
   }
 }
 
 export class TellJokeHandler extends BaseHandler {
   async handleInput() {
-    this.sendAMessage("Ok...");
-    const response = await fetch("https://api.dadjokes.io/api/random/joke");
+    this.sendAMessage('Ok...');
+    const response = await fetch('https://api.dadjokes.io/api/random/joke');
     const resJson = await response.json();
     const jokeObj: JokeType = resJson.body[0];
 
@@ -782,8 +782,8 @@ export class TellJokeHandler extends BaseHandler {
 
 export class GiveQuoteHandler extends BaseHandler {
   async handleInput() {
-    this.sendAMessage("Ok...");
-    const response = await fetch("https://api.quotable.io/random");
+    this.sendAMessage('Ok...');
+    const response = await fetch('https://api.quotable.io/random');
     const quoteObj: QuoteType = await response.json();
 
     this.sendAMessage(quoteObj.content);
@@ -796,11 +796,11 @@ export class GiveQuoteHandler extends BaseHandler {
 
 export class GetNewsHandler extends BaseHandler {
   handleInput() {
-    this.sendAMessage("Here are the top stories");
+    this.sendAMessage('Here are the top stories');
     this.addChatFx({
-      text: "",
-      variant: "news",
-      extraData: { modalChild: "news" },
+      text: '',
+      variant: 'news',
+      extraData: {modalChild: 'news'},
     });
   }
 }
@@ -808,76 +808,76 @@ export class GetNewsHandler extends BaseHandler {
 export class GoogleItHandler extends BaseHandler {
   handleInput(text: string) {
     let query = text;
-    if (text.toLowerCase().startsWith("google")) {
-      query = text.replace(/google /i, "");
+    if (text.toLowerCase().startsWith('google')) {
+      query = text.replace(/google /i, '');
     }
     const url = encodeURI(`https://www.google.com/search?hl=en&q=${query}`);
-    this.sendAMessage("Let me check...");
-    this.addChatFx({ text: "", variant: "google", extraData: { url } });
+    this.sendAMessage('Let me check...');
+    this.addChatFx({text: '', variant: 'google', extraData: {url}});
   }
 }
 
 export class PlayMusicHandler extends BaseHandler {
   handleInput(text: string) {
     let query = text;
-    if (text.startsWith("play")) {
-      query = text.replace(/play /i, "");
+    if (text.startsWith('play')) {
+      query = text.replace(/play /i, '');
     }
     const url = `https://m.soundcloud.com/search?q=${query}`;
     this.sendAMessage("Let's jam");
     this.addChatFx({
-      text: "",
-      variant: "music",
-      extraData: { modalChild: "music", url },
+      text: '',
+      variant: 'music',
+      extraData: {modalChild: 'music', url},
     });
   }
 }
 
 export class GetMemesHandler extends BaseHandler {
   handleInput() {
-    this.sendAMessage("Memes coming right up");
+    this.sendAMessage('Memes coming right up');
     this.addChatFx({
-      text: "",
-      variant: "memes",
-      extraData: { modalChild: "memes" },
+      text: '',
+      variant: 'memes',
+      extraData: {modalChild: 'memes'},
     });
   }
 }
 
 export class PlayGamesHandler extends BaseHandler {
   handleInput(text: string) {
-    if (text.includes("chess")) {
-      this.sendAMessage("Opening chess");
+    if (text.includes('chess')) {
+      this.sendAMessage('Opening chess');
       this.addChatFx({
-        text: "",
-        variant: "games",
-        extraData: { modalChild: "chess" },
+        text: '',
+        variant: 'games',
+        extraData: {modalChild: 'chess'},
       });
       return;
     }
-    if (text.includes("sudoku")) {
-      this.sendAMessage("Opening Sudoku");
+    if (text.includes('sudoku')) {
+      this.sendAMessage('Opening Sudoku');
       this.addChatFx({
-        text: "",
-        variant: "games",
-        extraData: { modalChild: "sudoku" },
+        text: '',
+        variant: 'games',
+        extraData: {modalChild: 'sudoku'},
       });
       return;
     }
-    if (text.includes("checkers")) {
-      this.sendAMessage("Opening Checkers");
+    if (text.includes('checkers')) {
+      this.sendAMessage('Opening Checkers');
       this.addChatFx({
-        text: "",
-        variant: "games",
-        extraData: { modalChild: "checkers" },
+        text: '',
+        variant: 'games',
+        extraData: {modalChild: 'checkers'},
       });
       return;
     }
-    this.sendAMessage("Okay, choose one");
+    this.sendAMessage('Okay, choose one');
     this.addChatFx({
-      text: "",
-      variant: "games",
-      extraData: { modalChild: "games" },
+      text: '',
+      variant: 'games',
+      extraData: {modalChild: 'games'},
     });
   }
 }
@@ -886,24 +886,22 @@ export class GetCreatorHandler extends BaseHandler {
   async handleInput() {
     this.sendAMessage("Thought you'd never ask");
     await sleep(2000);
-    this.sendAMessage("I was made by Patrick");
+    this.sendAMessage('I was made by Just Patrick');
     await sleep(2000);
-    this.sendAMessage("If you want to reach out to him here are his details");
-    await sleep(2500);
     this.sendAMessage(
-      "His twitter is @PnTX10, Github is Patrick-web and email is patrickwaweruofficial@gmail.com"
+      'If you want to reach out to him, go to https://patrickwaweru.xyz',
     );
   }
 }
 
 export class ToggleVoiceHandler extends BaseHandler {
   handleInput(text: string) {
-    if (text.includes("off") || text.includes("shut up")) {
+    if (text.includes('off') || text.includes('shut up')) {
       actions.setVoiceReplies(false);
     }
-    if (text.includes("on") || text.includes("talk to me")) {
+    if (text.includes('on') || text.includes('talk to me')) {
       actions.setVoiceReplies(true);
     }
-    this.sendAMessage("Ok");
+    this.sendAMessage('Ok');
   }
 }

@@ -60,7 +60,6 @@ export const GoogleBubble = ({chat}: {chat: ChatType}) => {
 
   useEffect(() => {
     setTimeout(() => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setWebviewHeight(260);
     }, 1000);
   }, []);
@@ -76,7 +75,7 @@ export const GoogleBubble = ({chat}: {chat: ChatType}) => {
       }}>
       <View
         style={{
-          height: webviewHeight,
+          height: 260,
           borderRadius: 20,
           width: '100%',
           overflow: 'hidden',
